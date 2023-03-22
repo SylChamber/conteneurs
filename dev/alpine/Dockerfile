@@ -1,5 +1,5 @@
 ARG VARIANT=latest
-FROM sylchamber/base:${VARIANT}
+FROM ghcr.io/sylchamber/base:${VARIANT}
 
 ARG USER=user
 
