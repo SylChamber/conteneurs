@@ -1,4 +1,5 @@
 # Image de base Alpine
+LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 ARG VARIANT=latest
 FROM docker.io/library/alpine:${VARIANT}
 
