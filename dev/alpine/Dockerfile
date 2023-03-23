@@ -1,5 +1,7 @@
 ARG VARIANT=latest
-FROM ghcr.io/sylchamber/base:${VARIANT}
+FROM quay.io/sylchambr/base:${VARIANT}
+LABEL org.opencontainers.image.base.name quay.io/sylchambr/base
+LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 
 ARG USER=user
 

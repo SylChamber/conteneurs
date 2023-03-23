@@ -1,20 +1,24 @@
 # Image de base Alpine
-LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 ARG VARIANT=latest
 FROM docker.io/library/alpine:${VARIANT}
+LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 
 ARG LOCALE=fr-CA
 
 ENV LANG=${LOCALE}.UTF-8
 
 COPY dotfiles/.* /etc/skel/
-RUN apk add --no-cache \
+RUN apk update && \
+  apk upgrade && \
+  apk add --no-cache \
+  apk-tools-doc \
   sudo \
   shadow \
   zsh \
   zsh-doc \
   zsh-completions \
   man-db \
+  man-db-doc \
   man-db-lang \
   man-pages \
   nano \
