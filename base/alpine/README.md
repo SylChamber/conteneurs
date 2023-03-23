@@ -14,5 +14,11 @@ Elle inclut également une configuration par défaut de `zsh` pour les utilisate
 Pour générer l'image Alpine, lancer:
 
 ```shell
-docker build -t sylchamber/base -t sylchamber-qc/base:alpine .
+make build
+```
+
+Pour publier l'image sur [quay.io/user/sylchambr/](https://quay.io/user/sylchambr/), lancer:
+
+```shell
+make push
 ```
