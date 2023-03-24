@@ -21,13 +21,20 @@ RUN apk update && \
   man-db-doc \
   man-db-lang \
   man-pages \
+  musl-locales \
   nano \
   nano-doc \
   curl \
   git \
   git-zsh-completion \
+  gpg \
+  gpg-agent \
+  openssh-client-common \
+  openssh-keygen \
   jq \
   jq-doc \
+  zip \
+  unzip \
   starship \
   starship-zsh-plugin \
   yq \
