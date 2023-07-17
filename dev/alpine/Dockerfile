@@ -6,7 +6,9 @@ LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 ARG USER=user
 
 RUN adduser -s /bin/zsh -D ${USER} && \
-  adduser ${USER} wheel
+  adduser ${USER} wheel && \
+  apk add --no-cache \
+  github-cli github-cli-doc github-cli-zsh-completion
 
 USER ${USER}
 WORKDIR /home/${USER}
