@@ -10,7 +10,7 @@ ifndef cli
   $(error ERROR: docker ou podman doivent être installés)
 endif
 
-.PHONY: build-image
+.PHONY: build
 build:
 	${cli} build -t ${image_name} -t ${image_name}:alpine .
 
