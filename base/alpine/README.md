@@ -22,3 +22,21 @@ Pour publier l'image sur [quay.io/user/sylchambr/](https://quay.io/user/sylchamb
 ```shell
 make push
 ```
+
+## Utilisation d'un volume
+
+Plutôt que d'écrire des fichiers de profil dans l'image elle-même, envisager d'utiliser un volume de données monté comme `/home`. Dans quel cas, créer au préalable le volume et y importer les fichiers:
+
+```shell
+podman volume create home
+tar -cf - -C ./dotfiles . | podman volume import home -
+
+```
+
+Ou encore, créer le volume à la création du conteneur, d'autant plus que les bons droits seront accordés selon le point de montage.
+
+```shell
+podman run --name mon-conteneur -it -v home:/home/user \
+  -v $(realpath ~/.aws):/home/user/.aws -v $(realpath ~/.ssh):/home/user/.ssh \
+  quay.io/sylchambr/base
+```
