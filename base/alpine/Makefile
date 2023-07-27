@@ -2,6 +2,7 @@
 
 user := quay.io/sylchambr
 image_name := ${user}/base
+variant := alpine
 
 # déterminer le client de conteneur: docker ou podman
 cli != [ -f /usr/bin/podman ] && echo "/usr/bin/podman" || ( [ -f /usr/bin/docker ] && echo "/usr/bin/docker" )
@@ -12,9 +13,8 @@ endif
 
 .PHONY: build
 build:
-	${cli} build -t ${image_name} -t ${image_name}:alpine .
+	${cli} build -t ${image_name}:${variant} .
 
 .PHONY: push
 push:
-	${cli} push ${image_name}
-	${cli} push ${image_name}:alpine
+	${cli} push ${image_name}:${variant}
