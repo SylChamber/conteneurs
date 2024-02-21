@@ -1,6 +1,8 @@
-# Image de base Ubuntu - version intérim en cours (rolling)
-ARG VARIANT=rolling
-FROM public.ecr.aws/docker/library/ubuntu:${VARIANT}
+# Image de base Ubuntu - version intérim en cours
+# ubuntu stable géré par Canonical, non-lts
+# mis à jour plus fréquemment que ubuntu:rolling géré par Docker
+ARG VARIANT=latest
+FROM public.ecr.aws/ubuntu/ubuntu:${VARIANT}
 LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 
 ARG USER=ubuntu
