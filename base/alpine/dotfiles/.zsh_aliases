@@ -1,6 +1,4 @@
 # alias communs
-alias bat="batcat"
-alias fd="fd"
 alias free="free -h"
 alias ls="ls --color=always --group-directories-first"
 alias l='ls -lh'
