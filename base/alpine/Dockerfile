@@ -16,15 +16,22 @@ RUN apk update && apk upgrade && \
   zsh zsh-doc zsh-completions \
   man-db man-db-doc man-db-lang \
   man-pages \
+  bat bat-doc bat-zsh-completion \
   musl-locales \
-  exa exa-doc exa-zsh-completion \
+  gcompat \
+  eza eza-doc eza-zsh-completion \
+  fd fd-doc fd-zsh-completion \
   tree tree-doc \
-  htop htop-doc \
+  htop htop-doc btop \
   bottom bottom-doc bottom-zsh-completion \
   direnv direnv-doc \
   nano nano-doc \
+  micro micro-doc \
+  vim vim-doc vimdiff \
   curl curl-doc curl-zsh-completion \
+  wget wget-doc \
   git git-doc git-zsh-completion \
+  github-cli github-cli-doc github-cli-zsh-completion \
   gpg gpg-agent \
   openssh-client-common \
   openssh-keygen \

@@ -1,0 +1,13 @@
+# alias communs
+alias bat="batcat"
+alias fd="fd"
+alias free="free -h"
+alias ls="ls --color=always"
+alias la="ls -lah"
+alias ll='la'
+alias l='la'
+alias dir="la"
+alias mc=micro
+
+# pretty print PATH
+alias ppp='echo $PATH | tr ":" "\n"'
