@@ -15,6 +15,13 @@ RUN \
   unzip -d /tmp /tmp/terraform.zip && \
   rm /tmp/*.zip
 
+FROM ubuntu:20.04 as sessionmanagerplugin
+
+RUN apt-get update && \
+  apt-get install -y curl && \
+  curl -Lo "session-manager-plugin.deb" "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" && \
+  dpkg -i "session-manager-plugin.deb"
+
 FROM quay.io/sylchambr/base:${VARIANT}
 LABEL org.opencontainers.image.base.name quay.io/sylchambr/iac
 LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
@@ -22,6 +29,8 @@ LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 ARG USER=user
 
 COPY --from=download /tmp/packer /tmp/terraform /tmp/tofu.apk /tmp/
+
+COPY --from=sessionmanagerplugin /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/
 
 RUN adduser -s /bin/zsh -D ${USER} && \
   adduser ${USER} wheel && \
