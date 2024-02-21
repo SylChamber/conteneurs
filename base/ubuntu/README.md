@@ -38,7 +38,7 @@ tar -cf - -C ./dotfiles . | podman volume import home -
 Ou encore, créer le volume à la création du conteneur, d'autant plus que les bons droits seront accordés selon le point de montage.
 
 ```shell
-podman run --name mon-conteneur -it -v home:/home/user \
+podman run --name mon-conteneur -it --userns=keep-id -v home:/home/user \
   -v $(realpath ~/.aws):/home/user/.aws -v $(realpath ~/.ssh):/home/user/.ssh \
   quay.io/sylchambr/base
 ```

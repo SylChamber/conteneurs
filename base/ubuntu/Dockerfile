@@ -19,17 +19,19 @@ RUN apt-get update -y && apt-get install -y \
   ca-certificates \
   locales tzdata \
   coreutils \
-  zsh zsh-doc zsh-antigen \
+  zsh zsh-doc \
   man-db manpages manpages-fr \
   bat \
-  exa \
   gdu \
   duf \
   fd-find \
   tree \
+  lsof \
   htop btop \
   direnv \
   nano \
+  micro \
+  vim \
   curl wget \
   git git-doc \
   gpg gpg-agent pinentry-curses pinentry-doc \
@@ -47,6 +49,8 @@ RUN CODENAME=$(sed -En 's/VERSION_CODENAME=(.*)/\1/p' /etc/os-release) && \
   > /etc/apt/sources.list.d/github-cli.list && \
   apt-get update -y && apt-get install gh -y && \
   curl -fsS https://starship.rs/install.sh | sh -s -- --force > /dev/null && \
+  wget --quiet --output-document - https://github.com/mattmc3/antidote/archive/refs/heads/main.tar.gz | \
+  tar xz --directory /usr/local/share/ && \
   echo '%adm ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/adm-nopasswd && \
   chsh --shell /usr/bin\/zsh && \
   chsh --shell /usr/bin\/zsh ${USER} && \

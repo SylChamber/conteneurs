@@ -70,7 +70,7 @@ export LESS_TERMCAP_me=$'\E[0m'         # exit_attribute_mode
 export LESS_TERMCAP_se=$'\E[0m'         # exit_standout_mode
 export LESS_TERMCAP_ue=$'\E[0m'         # exit_underline_mode
 export MANROFFOPT="-c"
-# tailoring `less'
+# tailoring 'less'
 # LESS="--quit-at-eof --ignore-case --long-prompt --raw-control-chars"
 # option RAW-CONTROL-CHARS en majuscules qui passe uniquement les codes de couleur
 # open no-init pour éviter d'effacer l'écran en quittant less
@@ -85,3 +85,6 @@ export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;
 #  promptinit && prompt adam1
 # prompt starship.rs
 eval "$(starship init zsh)"
+
+# chargement de direnv pour le chargement automatique des .env ou .envrc
+eval "$(direnv hook zsh)"
