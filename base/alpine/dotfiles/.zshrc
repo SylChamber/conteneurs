@@ -85,3 +85,6 @@ export LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;
 #  promptinit && prompt adam1
 # prompt starship.rs
 eval "$(starship init zsh)"
+
+# chargement de direnv pour le chargement automatique des .env ou .envrc
+eval "$(direnv hook zsh)"
