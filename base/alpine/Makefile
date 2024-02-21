@@ -1,7 +1,8 @@
 # Production des images
 
-user := quay.io/sylchambr
-image_name := ${user}/base
+local := sylchamber
+registry := quay.io/sylchambr
+image_name := base
 variant := alpine
 
 # déterminer le client de conteneur: docker ou podman
@@ -13,8 +14,9 @@ endif
 
 .PHONY: build
 build:
-	${cli} build -t ${image_name}:${variant} .
+	${cli} build -t ${local}/${image_name}:${variant} \
+	-t ${registry}/${image_name}:${variant} .
 
 .PHONY: push
 push:
-	${cli} push ${image_name}:${variant}
+	${cli} push ${registry}/${image_name}:${variant}
