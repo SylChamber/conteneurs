@@ -1,5 +1,7 @@
 # Image Alpine pour le IaC
 ARG VARIANT=alpine
+
+# étape de téléchargement de binaires
 FROM quay.io/sylchambr/base:alpine as download
 
 ARG HASHICORP_URL=https://releases.hashicorp.com
@@ -15,6 +17,8 @@ RUN \
   unzip -d /tmp /tmp/terraform.zip && \
   rm /tmp/*.zip
 
+# étape de récupération de session-manager-plugin for AWS CLI
+# https://github.com/aws/session-manager-plugin/issues/12#issuecomment-964117677
 FROM ubuntu:20.04 as sessionmanagerplugin
 
 RUN apt-get update && \
@@ -22,6 +26,7 @@ RUN apt-get update && \
   curl -Lo "session-manager-plugin.deb" "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" && \
   dpkg -i "session-manager-plugin.deb"
 
+# image finale
 FROM quay.io/sylchambr/base:${VARIANT}
 LABEL org.opencontainers.image.base.name quay.io/sylchambr/iac
 LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
