@@ -2,12 +2,12 @@
 
 Image de base Alpine contenant le shell `zsh`, les `man-pages`, le prompt [Starship](https://starship.rs) pour shell ainsi que des outils console fréquents:
 
-* `curl`
-* `git`
-* `nano` (tout le monde n'aime pas nécessairement `vi`!)
+* `curl` et `wget`
+* `git` et la cli GitHub
+* `nano`, `micro` et `vim`
 * `sudo`
-* `jq`
-* `yq`
+* `jq` et `yq`
+* `direnv`
 
 Elle inclut également une configuration par défaut de `zsh` pour les utilisateurs sous `/etc/skel`.
 

@@ -11,35 +11,37 @@ COPY dotfiles/.* /etc/skel/
 RUN apk update && apk upgrade && \
   apk add --no-cache \
   apk-tools-doc \
-  sudo \
-  shadow \
-  zsh zsh-doc zsh-completions \
-  man-db man-db-doc man-db-lang \
-  man-pages \
   bat bat-doc bat-zsh-completion \
-  musl-locales \
-  gcompat \
+  bottom bottom-doc bottom-zsh-completion \
+  curl curl-doc curl-zsh-completion \
+  direnv direnv-doc \
   eza eza-doc eza-zsh-completion \
   fd fd-doc fd-zsh-completion \
-  tree tree-doc \
-  htop htop-doc btop \
-  bottom bottom-doc bottom-zsh-completion \
-  direnv direnv-doc \
-  nano nano-doc \
-  micro micro-doc \
-  vim vim-doc vimdiff \
-  curl curl-doc curl-zsh-completion \
-  wget wget-doc \
+  gcompat \
   git git-doc git-zsh-completion \
   github-cli github-cli-doc github-cli-zsh-completion \
   gpg gpg-agent \
+  htop htop-doc btop \
+  jq jq-doc \
+  man-db man-db-doc man-db-lang \
+  man-pages \
+  micro micro-doc \
+  musl-locales \
+  nano nano-doc \
   openssh-client-common \
   openssh-keygen \
-  jq jq-doc \
-  zip zip-doc \
-  unzip unzip-doc \
+  sudo \
+  shadow \
   starship starship-zsh-plugin \
-  yq yq-zsh-completion && \
+  tree tree-doc \
+  unzip unzip-doc \
+  vim vim-doc vimdiff \
+  wget wget-doc \
+  yq yq-zsh-completion \
+  zip zip-doc \
+  zsh zsh-doc zsh-completions
+
+RUN \
   echo '%wheel ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/wheel-nopasswd && \
   sed -ri 's/^(root:)(.*)\/bin\/ash/\1\2\/bin\/zsh/' /etc/passwd && \
   mkdir -p /root/.local && \
