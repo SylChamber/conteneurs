@@ -27,3 +27,21 @@ podman build -t sylchamber/iac:alpine -t quay.io/sylchambr/iac:alpine \
   --build-arg TERRAFORM_VERSION=$TERRAFORM_VERSION \
   --build-arg TOFU_VERSION=$TOFU_VERSION .
 ```
+
+## Utilisation
+
+Créer un volume de données à la création du conteneur (les bons droits seront accordés selon le point de montage).
+
+```shell
+podman run --name mon-conteneur -it --userns=keep-id \
+  -v home:/home/user \
+  -v $(realpath ~/.aws):/home/user/.aws \
+  -v $(realpath ~/.ssh):/home/user/.ssh \
+  quay.io/sylchambr/iac:alpine
+```
+
+Par la suite, lancer le conteneur comme suit:
+
+```shell
+podman start -ai mon-conteneur
+```
