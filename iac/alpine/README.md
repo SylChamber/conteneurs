@@ -21,7 +21,10 @@ TERRAFORM_VERSION=$(curl -sL https://api.github.com/repos/hashicorp/terraform/re
   jq -r '.tag_name' | sed -r 's/v(.*)/\1/')
 TOFU_VERSION=$(curl -sL https://api.github.com/repos/opentofu/opentofu/releases/latest |
   jq -r '.tag_name' | sed -r 's/v(.*)/\1/')
-podman build -t sylchamber/iac:alpine -t quay.io/sylchambr/iac:alpine \
+podman build -t sylchamber/iac \
+  -t sylchamber/iac:alpine:latest \
+  -t quay.io/sylchambr/iac:alpine \
+  -t quay.io/sylchambr/iac:latest \
   --build-arg USER=user \
   --build-arg PACKER_VERSION=$PACKER_VERSION \
   --build-arg TERRAFORM_VERSION=$TERRAFORM_VERSION \
