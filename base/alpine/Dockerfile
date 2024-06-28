@@ -37,7 +37,7 @@ RUN apk update && apk upgrade && \
   unzip unzip-doc \
   vim vim-doc vimdiff \
   wget wget-doc \
-  yq yq-zsh-completion \
+  yq-go yq-go-zsh-completion \
   zip zip-doc \
   zsh zsh-doc zsh-completions
 

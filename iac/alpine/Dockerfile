@@ -13,9 +13,8 @@ RUN \
   curl -fL ${HASHICORP_URL}/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o /tmp/packer.zip && \
   curl -fL ${HASHICORP_URL}/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip && \
   curl -fL https://github.com/opentofu/opentofu/releases/download/v${TOFU_VERSION}/tofu_${TOFU_VERSION}_amd64.apk -o /tmp/tofu.apk && \
-  unzip -d /tmp /tmp/packer.zip && \
-  unzip -d /tmp /tmp/terraform.zip && \
-  rm /tmp/*.zip
+  unzip -od /tmp /tmp/packer.zip && \
+  unzip -od /tmp /tmp/terraform.zip
 
 # étape de récupération de session-manager-plugin for AWS CLI
 # https://github.com/aws/session-manager-plugin/issues/12#issuecomment-964117677
