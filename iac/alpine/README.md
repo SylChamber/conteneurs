@@ -36,11 +36,19 @@ podman build -t sylchamber/iac \
 Créer un volume de données à la création du conteneur (les bons droits seront accordés selon le point de montage).
 
 ```shell
+# podman
 podman run --name mon-conteneur -it --userns=keep-id \
   -v home:/home/user \
   -v $(realpath ~/.aws):/home/user/.aws \
   -v $(realpath ~/.ssh):/home/user/.ssh \
-  quay.io/sylchambr/iac:alpine
+  quay.io/sylchambr/iac
+
+# docker
+docker run --name mon-conteneur -it \
+  -v home:/home/user \
+  -v $(realpath ~/.aws):/home/user/.aws \
+  -v $(realpath ~/.ssh):/home/user/.ssh \
+  quay.io/sylchambr/iac
 ```
 
 Par la suite, lancer le conteneur comme suit:
