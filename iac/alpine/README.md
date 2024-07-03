@@ -21,11 +21,14 @@ TERRAFORM_VERSION=$(curl -sL https://api.github.com/repos/hashicorp/terraform/re
   jq -r '.tag_name' | sed -r 's/v(.*)/\1/')
 TOFU_VERSION=$(curl -sL https://api.github.com/repos/opentofu/opentofu/releases/latest |
   jq -r '.tag_name' | sed -r 's/v(.*)/\1/')
+KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
 podman build -t sylchamber/iac \
-  -t sylchamber/iac:alpine:latest \
+  -t sylchamber/iac:alpine \
+  -t sylchamber/iac:latest \
   -t quay.io/sylchambr/iac:alpine \
   -t quay.io/sylchambr/iac:latest \
   --build-arg USER=user \
+  --build-arg KUBECTL_VERSION=$KUBECTL_VERSION \
   --build-arg PACKER_VERSION=$PACKER_VERSION \
   --build-arg TERRAFORM_VERSION=$TERRAFORM_VERSION \
   --build-arg TOFU_VERSION=$TOFU_VERSION .
@@ -52,6 +55,8 @@ docker run --name mon-conteneur -it \
 ```
 
 Par la suite, lancer le conteneur comme suit:
+
+> Omettre `-ai` si on veut uniquement utiliser le conteneur dans VS Code.
 
 ```shell
 podman start -ai mon-conteneur

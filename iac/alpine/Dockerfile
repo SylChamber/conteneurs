@@ -4,12 +4,14 @@ ARG VARIANT=alpine
 # étape de téléchargement de binaires
 FROM quay.io/sylchambr/base:alpine as download
 
+ARG KUBECTL_VERSION
 ARG HASHICORP_URL=https://releases.hashicorp.com
 ARG PACKER_VERSION
 ARG TERRAFORM_VERSION
 ARG TOFU_VERSION
 
 RUN \
+  curl -fL https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -o /tmp/kubectl && \
   curl -fL ${HASHICORP_URL}/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip -o /tmp/packer.zip && \
   curl -fL ${HASHICORP_URL}/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip && \
   curl -fL https://github.com/opentofu/opentofu/releases/download/v${TOFU_VERSION}/tofu_${TOFU_VERSION}_amd64.apk -o /tmp/tofu.apk && \
@@ -32,7 +34,7 @@ LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 
 ARG USER=user
 
-COPY --from=download /tmp/packer /tmp/terraform /tmp/tofu.apk /tmp/
+COPY --from=download /tmp/kubectl /tmp/packer /tmp/terraform /tmp/tofu.apk /tmp/
 
 COPY --from=sessionmanagerplugin /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/
 
