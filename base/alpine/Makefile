@@ -14,7 +14,9 @@ endif
 
 .PHONY: build
 build:
-	${cli} build -t ${local}/${image_name} -t ${local}/${image_name}:${variant} \
+	${cli} build -t ${local}/${image_name} \
+	-t ${local}/${image_name}:${variant} \
+	-t ${registry}/${image_name} \
 	-t ${registry}/${image_name}:${variant} .
 
 .PHONY: push
