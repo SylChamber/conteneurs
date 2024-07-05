@@ -19,6 +19,7 @@ RUN apk update && apk upgrade && \
   eza eza-doc eza-zsh-completion \
   fd fd-doc fd-zsh-completion \
   gcompat \
+  gdu gdu-doc \
   git git-doc git-zsh-completion \
   github-cli github-cli-doc github-cli-zsh-completion \
   gpg gpg-agent \
