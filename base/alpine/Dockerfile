@@ -10,6 +10,7 @@ ENV LANG=${LOCALE}.UTF-8
 COPY dotfiles/.* /etc/skel/
 RUN apk update && apk upgrade && \
   apk add --no-cache \
+  age age-doc \
   apk-tools-doc \
   bat bat-doc bat-zsh-completion \
   bottom bottom-doc bottom-zsh-completion \
