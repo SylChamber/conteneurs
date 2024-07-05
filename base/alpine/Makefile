@@ -1,4 +1,4 @@
-# Production des images
+# Gestion des images base
 
 local := sylchamber
 registry := quay.io/sylchambr
