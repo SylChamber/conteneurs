@@ -38,15 +38,38 @@ COPY --from=download /tmp/kubectl /tmp/packer /tmp/terraform /tmp/tofu.apk /tmp/
 
 COPY --from=sessionmanagerplugin /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/
 
-RUN adduser -s /bin/zsh -D ${USER} && \
-  adduser ${USER} wheel && \
-  apk add --no-cache \
-  aws-cli aws-cli-doc aws-cli-zsh-completion \
-  python3 py3-pip py3-pip-doc py3-pip-zsh-completion && \
+RUN apk add --no-cache \
+  aws-cli \
+  aws-cli-doc \
+  aws-cli-zsh-completion \
+  pipx \
+  podman \
+  podman-compose \
+  podman-doc \
+  podman-remote \
+  podman-tui \
+  podman-zsh-completion \
+  python3 \
+  py3-pip \
+  py3-pip-doc \
+  py3-pip-zsh-completion && \
   apk add --allow-untrusted /tmp/tofu.apk && \
   mv /tmp/packer /usr/local/bin/ && \
   mv /tmp/terraform /usr/local/bin/ && \
-  rm /tmp/tofu.apk
+  mv /tmp/kubectl /usr/local/bin/ && \
+  rm /tmp/tofu.apk && \
+  chmod +x /usr/local/bin/*
+
+RUN \
+  useradd --shell /bin/zsh ${USER} --groups wheel --create-home && \
+  mkdir -p /tmp/storage-run-1000/podman && \
+  chown ${USER}:${USER} -R /tmp/storage-run-1000
+
+ADD podman-tui.conf /home/${USER}/.config/podman-tui/podman-tui.conf
+
+RUN chown ${USER}:${USER} -R /home/${USER}/.config
+
+VOLUME /tmp/storage-run-1000/podman/
 
 USER ${USER}
 WORKDIR /home/${USER}

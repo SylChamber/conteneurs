@@ -7,10 +7,13 @@ Cette image est basée sur [l'image de base Alpine](../../base/alpine/README.md)
 * `opentofu`
 * `packer`
 * le langage `python`
+* `podman` et `podman-remote`
 
 Elle définit un utilisateur `user` (modifiable par l'argument `USER`), sous lequel le conteneur s'exécute.
 
 L'utilisateur `user` détient les privilèges `sudo`.
+
+## Génération de l'image
 
 Pour générer l'image Alpine, lancer:
 
@@ -60,4 +63,29 @@ Par la suite, lancer le conteneur comme suit:
 
 ```shell
 podman start -ai mon-conteneur
+```
+
+## Utilisation de podman
+
+L'image inclut `podman` en mode `podman from podman`, où on doit fournir en volume un socket podman de l'hôte:
+
+> Il a été impossible de préparer une image Alpine permettant l'utilisation de `podman in podman` comme la technique de l'image `quay.io/podman/stable` basée sur Fedora. L'allocation de `uid` ne fonctionne pas.
+
+```shell
+# sur l'hôte
+sudo loginctl enable-linger $USER
+systemctl --user enable podman podman.socket
+systemctl --user start podman.socket
+podman run ... \
+  --userns=keep-id \
+  -v $XDG_RUNTIME_DIR/podman/podman.sock:/tmp/storage-run-1000/podman/podman.sock \
+  ...
+```
+
+Dans un conteneur, il suffit d'utiliser `podman` avec l'option `--remote` ou de substituer `podman` avec `podman-remote`:
+
+```shell
+# dans le conteneur
+podman --remote ps
+podman-remote ps
 ```

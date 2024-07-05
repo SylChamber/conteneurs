@@ -7,9 +7,10 @@ Image de base Alpine contenant le shell `zsh`, les `man-pages`, le prompt [Stars
 * `nano`, `micro` et `vim`
 * `sudo`
 * `jq` et `yq`
-* `direnv`
 
 Elle inclut également une configuration par défaut de `zsh` pour les utilisateurs sous `/etc/skel`.
+
+## Génération de l'image
 
 Pour générer l'image Alpine, lancer:
 

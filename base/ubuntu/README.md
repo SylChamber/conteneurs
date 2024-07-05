@@ -1,5 +1,7 @@
 # Image de base Ubuntu
 
+> Image non maintenue
+
 Image de base Ubuntu contenant le shell `zsh`, les `man-pages`, le prompt [Starship](https://starship.rs) pour shell ainsi que des outils console fréquents:
 
 * `curl` et `wget`
