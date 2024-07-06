@@ -6,6 +6,11 @@
 setopt autocd extendedglob nomatch notify
 unsetopt beep
 
+# charger le profil - ne se fait pas automatiquement en conteneur (possiblement pas un login shell)
+if [ -f ~/.zprofile ]; then
+  source ~/.zprofile
+fi
+
 # charger les alias
 if [ -f ~/.zsh_aliases ]; then
   source ~/.zsh_aliases
