@@ -52,7 +52,8 @@ RUN apk add --no-cache \
   python3 \
   py3-pip \
   py3-pip-doc \
-  py3-pip-zsh-completion && \
+  py3-pip-zsh-completion \
+  sops && \
   apk add --allow-untrusted /tmp/tofu.apk && \
   mv /tmp/packer /usr/local/bin/ && \
   mv /tmp/terraform /usr/local/bin/ && \
