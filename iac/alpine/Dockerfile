@@ -67,6 +67,7 @@ RUN \
   chown ${USER}:${USER} -R /tmp/storage-run-1000
 
 ADD podman-tui.conf /home/${USER}/.config/podman-tui/podman-tui.conf
+ADD pip.conf /home/${USER}/.config/pip/pip.conf
 
 RUN chown ${USER}:${USER} -R /home/${USER}/.config
 
