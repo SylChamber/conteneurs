@@ -3,7 +3,9 @@
 # mis à jour plus fréquemment que ubuntu:rolling géré par Docker
 ARG VARIANT=latest
 FROM public.ecr.aws/ubuntu/ubuntu:${VARIANT}
-LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
+LABEL org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
+LABEL org.opencontainers.image.description="Image de base Ubuntu version intérim"
+LABEL org.opencontainers.image.base.name=public.ecr.aws/ubuntu/ubuntu:${VARIANT}
 
 ARG USER=ubuntu
 ARG LOCALE=fr_CA.UTF-8
@@ -16,43 +18,44 @@ ENV DEBIAN_FRONTEND=noninteractive \
   TZ=${TIMEZONE}
 
 COPY dotfiles/.* /etc/skel/
-RUN apt-get update -y && apt-get install -y \
+RUN \
+  apt-get update -y && apt-get install -y \
   sudo \
   ca-certificates \
   locales tzdata \
   coreutils \
   zsh zsh-doc \
-  man-db manpages manpages-fr \
+  man-db manpages manpages-fr tealdeer unminimize \
+  acl \
   bat \
   gdu \
   duf \
+  dysk \
+  eza \
   fd-find \
   tree \
+  wipe \
   lsof \
-  htop btop \
+  htop btop fastfetch procs s-tui \
   direnv \
   nano \
   micro \
   vim \
-  curl wget \
-  git git-doc \
+  curl httpie wget \
+  git git-doc git-credential-oauth \
   gpg gpg-agent pinentry-curses pinentry-doc \
   openssh-client \
-  jq yq \
+  jq \
   zip unzip && \
-  yes | unminimize
+  yes | unminimize && \
+  rm -rf /var/lib/apt/lists/*
 
 # Définition du locale:
 # https://stackoverflow.com/questions/28405902/how-to-set-the-locale-inside-a-debian-ubuntu-docker-container#answer-28406007
-RUN CODENAME=$(sed -En 's/VERSION_CODENAME=(.*)/\1/p' /etc/os-release) && \
-  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
-  | dd of=/etc/apt/keyrings/githubcli-archive-keyring.gpg && \
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
-  > /etc/apt/sources.list.d/github-cli.list && \
-  apt-get update -y && apt-get install gh -y && \
+RUN \
+  cd /usr/local/bin && \
+  curl https://zyedidia.github.io/eget.sh | sh && chown root:root /usr/local/bin/eget && \
   curl -fsS https://starship.rs/install.sh | sh -s -- --force > /dev/null && \
-  wget --quiet --output-document - https://github.com/mattmc3/antidote/archive/refs/heads/main.tar.gz | \
-  tar xz --directory /usr/local/share/ && \
   echo '%adm ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/adm-nopasswd && \
   chsh --shell /usr/bin\/zsh && \
   chsh --shell /usr/bin\/zsh ${USER} && \
