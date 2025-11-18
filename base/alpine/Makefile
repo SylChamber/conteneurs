@@ -1,7 +1,7 @@
 # Gestion des images base
 
 local := sylchamber
-registry := quay.io/sylchambr
+registry := ghcr.io/sylchamber
 image_name := base
 variant := alpine
 
