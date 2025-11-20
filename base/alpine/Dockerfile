@@ -17,6 +17,7 @@ RUN apk update && apk upgrade && \
     apk-tools-doc \
     fish fish-doc \
     zsh zsh-doc zsh-completions \
+    acl acl-doc \
     bat bat-doc bat-fish-completion bat-zsh-completion \
     bottom bottom-doc bottom-fish-completion bottom-zsh-completion \
     broot broot-doc broot-fish-completion broot-zsh-completion \
@@ -24,6 +25,7 @@ RUN apk update && apk upgrade && \
     curl curl-doc curl-fish-completion curl-zsh-completion \
     direnv direnv-doc \
     dust dust-doc dust-fish-completion dust-zsh-completion \
+    dysk \
     eza eza-doc eza-fish-completion eza-zsh-completion \
     fastfetch fastfetch-doc fastfetch-fish-completion fastfetch-zsh-completion \
     fd fd-doc fd-fish-completion fd-zsh-completion \
@@ -43,22 +45,27 @@ RUN apk update && apk upgrade && \
     nano nano-doc \
     openssh-client-common \
     openssh-keygen \
+    pinentry-curses-ss pinentry-doc \
     procs procs-doc procs-fish-completion \
     ripgrep ripgrep-doc ripgrep-fish-completion ripgrep-zsh-completion \
     sudo \
     shadow \
     starship starship-zsh-plugin \
+    topgrade topgrade-doc topgrade-fish-completion topgrade-zsh-completion \
     tree tree-doc \
     unzip unzip-doc \
     vim vim-doc vimdiff \
     wget wget-doc \
     wipe wipe-doc \
+    xh xh-doc xh-fish-completion xh-zsh-completion \
     yq-go yq-go-fish-completion yq-go-zsh-completion \
     zip zip-doc
 
 RUN \
+    cd /usr/local/bin && \
+    curl https://zyedidia.github.io/eget.sh | sh && chown root:root /usr/local/bin/eget && \
     echo '%wheel ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/wheel-nopasswd && \
-    sed -ri 's/^(root:)(.*)\/bin\/ash/\1\2\/bin\/zsh/' /etc/passwd && \
+    sed -ri 's|^(root:)(.*)/bin/sh|\1\2/usr/bin/fish|' /etc/passwd && \
     mkdir -p /root/.local && \
     cp /etc/skel/.z* /root/ && \
     mkdir /etc/skel/.config && \
