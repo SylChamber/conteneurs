@@ -20,6 +20,7 @@ RUN apk update && apk upgrade && \
     bottom bottom-doc bottom-fish-completion \
     broot broot-doc broot-fish-completion \
     btop btop-doc \
+    ca-certificates ca-certificates-doc \
     chezmoi chezmoi-fish-completion \
     curl curl-doc curl-fish-completion \
     direnv direnv-doc \
