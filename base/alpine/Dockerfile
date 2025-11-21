@@ -10,34 +10,33 @@ ARG LOCALE=fr-CA
 
 ENV LANG=${LOCALE}.UTF-8
 
-COPY dotfiles/.* /etc/skel/
 RUN apk update && apk upgrade && \
     apk add --no-cache \
     age age-doc \
     apk-tools-doc \
     fish fish-doc \
-    zsh zsh-doc zsh-completions \
     acl acl-doc \
-    bat bat-doc bat-fish-completion bat-zsh-completion \
-    bottom bottom-doc bottom-fish-completion bottom-zsh-completion \
-    broot broot-doc broot-fish-completion broot-zsh-completion \
+    bat bat-doc bat-fish-completion \
+    bottom bottom-doc bottom-fish-completion \
+    broot broot-doc broot-fish-completion \
     btop btop-doc \
-    curl curl-doc curl-fish-completion curl-zsh-completion \
+    chezmoi chezmoi-fish-completion \
+    curl curl-doc curl-fish-completion \
     direnv direnv-doc \
-    dust dust-doc dust-fish-completion dust-zsh-completion \
+    dust dust-doc dust-fish-completion \
     dysk \
-    eza eza-doc eza-fish-completion eza-zsh-completion \
-    fastfetch fastfetch-doc fastfetch-fish-completion fastfetch-zsh-completion \
-    fd fd-doc fd-fish-completion fd-zsh-completion \
+    eza eza-doc eza-fish-completion \
+    fastfetch fastfetch-doc fastfetch-fish-completion \
+    fd fd-doc fd-fish-completion \
     gcompat \
     gdu gdu-doc \
-    git git-doc git-zsh-completion git-credential-oauth git-credential-oauth-doc \
-    github-cli github-cli-doc github-cli-fish-completion github-cli-zsh-completion \
+    git git-doc git-credential-oauth git-credential-oauth-doc \
+    github-cli github-cli-doc github-cli-fish-completion \
     gpg gpg-agent \
     htop htop-doc \
-    hyperfine hyperfine-doc hyperfine-fish-completion hyperfine-zsh-completion \
+    hyperfine hyperfine-doc hyperfine-fish-completion \
     jq jq-doc \
-    lsd lsd-fish-completion lsd-zsh-completion \
+    lsd lsd-fish-completion \
     man-db man-db-doc man-db-lang \
     man-pages \
     micro micro-doc \
@@ -47,29 +46,30 @@ RUN apk update && apk upgrade && \
     openssh-keygen \
     pinentry-curses-ss pinentry-doc \
     procs procs-doc procs-fish-completion \
-    ripgrep ripgrep-doc ripgrep-fish-completion ripgrep-zsh-completion \
+    ripgrep ripgrep-doc ripgrep-fish-completion \
     sudo \
     shadow \
-    starship starship-zsh-plugin \
-    topgrade topgrade-doc topgrade-fish-completion topgrade-zsh-completion \
+    starship \
+    topgrade topgrade-doc topgrade-fish-completion \
     tree tree-doc \
     unzip unzip-doc \
     vim vim-doc vimdiff \
     wget wget-doc \
     wipe wipe-doc \
-    xh xh-doc xh-fish-completion xh-zsh-completion \
-    yq-go yq-go-fish-completion yq-go-zsh-completion \
+    xh xh-doc xh-fish-completion \
+    yq-go yq-go-fish-completion \
     zip zip-doc
+
 
 RUN \
     cd /usr/local/bin && \
     curl https://zyedidia.github.io/eget.sh | sh && chown root:root /usr/local/bin/eget && \
     echo '%wheel ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/wheel-nopasswd && \
     sed -ri 's|^(root:)(.*)/bin/sh|\1\2/usr/bin/fish|' /etc/passwd && \
-    mkdir -p /root/.local && \
-    cp /etc/skel/.z* /root/ && \
-    mkdir /etc/skel/.config && \
-    mkdir /etc/skel/.local
+    mkdir -p -m 755 /etc/fish/conf.d /etc/fish/functions
+
+COPY --chown=root:root --chmod=644 ["fish/conf.d/*", "/etc/fish/conf.d/"]
+COPY --chown=root:root --chmod=644 ["fish/functions/*", "/etc/fish/functions/"]
 
 ENTRYPOINT [ "" ]
 CMD [ "/usr/bin/fish" ]
