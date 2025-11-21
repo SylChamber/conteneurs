@@ -1,0 +1,119 @@
+# Image de base Fedora plutôt qu'ubi, pour ses outils récents
+ARG VARIANT=latest
+FROM public.ecr.aws/docker/library/fedora:${VARIANT}
+LABEL org.opencontainers.image.description="Image de base"
+LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
+LABEL org.opencontainers.image.base.name=public.ecr.aws/docker/library/fedora:${VARIANT}
+
+# ARG LANG=fr_CA
+# ARG LANGPACK=fr
+# ARG LOCALE=${LANG}.UTF-8
+# ARG TZ=America/Toronto
+
+# ENV LANG=${LOCALE} \
+#   LANGUAGE=${LOCALE} \
+#   LC_ALL=${LOCALE} \
+#   TZ=${TZ} \
+#   _CONTAINERS_USERNS_CONFIGURED=""
+ENV _CONTAINERS_USERNS_CONFIGURED=""
+
+# https://stackoverflow.com/questions/64205680/cant-find-any-man-pages-in-fedora-docker-image
+# activation de l'installation des man-pages et réinstallation des paquets
+RUN \
+    sed -ri 's/^tsflags=nodocs$//' /etc/dnf/dnf.conf
+
+RUN \
+    # dnf -y reinstall shadow-utils && \
+    dnf -y update && dnf -y install \
+    'dnf-command(config-manager)' \
+    fish \
+    acl \
+    age \
+    bat \
+    bind-utils \
+    btop \
+    chezmoi \
+    curl \
+    direnv \
+    du-dust \
+    fastfetch \
+    fd-find \
+    fuse-overlayfs \
+    gdu \
+    git git-core-doc git-credential-oauth \
+    gh \
+    #glibc-langpack-${LANGPACK} \
+    #glibc-locale-source \
+    go-task \
+    gnupg2 pinentry pinentry-tty \
+    htop \
+    hyperfine \
+    # pour ss
+    iproute \
+    jq \
+    lsd \
+    lsof \
+    man-db man-pages \
+    micro \
+    nano \
+    openssh openssh-clients \
+    podman podman-compose podman-remote \
+    procs \
+    ripgrep \
+    sudo \
+    tealdeer \
+    tree \
+    unzip \
+    util-linux \
+    vim-enhanced \
+    wget \
+    which \
+    wipe \
+    yq \
+    zip \
+    --exclude container-selinux && \
+    mkdir -p /etc/skel/.config/containers
+
+COPY user-containers.conf /etc/skel/.config/containers/containers.conf
+
+# localedef --verbose --force -i ${LANG} -f UTF-8 ${LOCALE} && \
+RUN \
+    mkdir -p /usr/local/bin /usr/local/share/man/man1 && \
+    cd /usr/local/bin && \
+    curl https://zyedidia.github.io/eget.sh | sh && \
+    chown root:root /usr/local/bin/eget && \
+    chmod 755 /usr/local/bin/eget && \
+    mkdir -p /etc/sudoers.d/ && \
+    echo '%wheel ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/wheel-nopasswd && \
+    sed -ri 's|^(root:)(.*)/bin/sh|\1\2/usr/bin/fish|' /etc/passwd && \
+    mkdir -p -m 755 /etc/fish/conf.d /etc/fish/functions
+
+COPY --chown=root:root --chmod=644 ["fish/conf.d/*", "/etc/fish/conf.d/"]
+COPY --chown=root:root --chmod=644 ["fish/functions/*", "/etc/fish/functions/"]
+
+RUN \
+    eget FiloSottile/age --asset '^proof' --file age/age* --all --to /usr/local/bin && \
+    eget https://raw.githubusercontent.com/FiloSottile/age/refs/heads/main/doc/age.1 --to /usr/local/share/man/man1 &&\
+    eget https://raw.githubusercontent.com/FiloSottile/age/refs/heads/main/doc/age-keygen.1 --to /usr/local/share/man/man1 && \
+    eget ClementTsang/bottom --asset gnu.tar.gz --file btm --to /usr/local/bin && \
+    eget starship/starship --asset gnu --to /usr/local/bin && \
+    eget topgrade-rs/topgrade --asset gnu --to /usr/local/bin && \
+    eget ducaale/xh --to /usr/local/bin
+
+# ARG USER=user
+
+# RUN \
+#   adduser -s /usr/bin/zsh -G wheel ${USER} && \
+#   echo ${USER}:100000:65536 > /etc/subuid && \
+#   echo ${USER}:100000:65536 > /etc/subgid
+
+# VOLUME /home/${USER}/.local/share/containers
+
+# RUN chown ${USER}:${USER} -R /home/${USER}
+
+# USER ${USER}
+# WORKDIR /home/${USER}
+# CMD [ "/usr/bin/zsh" ]
+
+ENTRYPOINT [ "" ]
+CMD [ "/usr/bin/fish" ]
