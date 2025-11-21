@@ -34,6 +34,7 @@ ARG USER=ops
 COPY --from=download /tmp/bin/* /usr/local/bin/
 
 RUN apk add --no-cache \
+    fuse-overlayfs \
     go-task go-task-doc go-task-fishcomp go-task-task \
     helm helm-fish-completion \
     podman podman-doc podman-fish-completion \
@@ -50,18 +51,17 @@ RUN apk add --no-cache \
 RUN \
     useradd --shell /usr/bin/fish ${USER} --groups wheel --create-home && \
     mkdir -p /home/${USER}/.config/fish/conf.d /home/${USER}/.config/fish/functions && \
-    mkdir -p /tmp/storage-run-1000/podman && \
-    chown ${USER}:${USER} -R /tmp/storage-run-1000
+    mkdir -p /home/${USER}/.local/share
 
 ADD podman-tui.conf /home/${USER}/.config/podman-tui/podman-tui.conf
 ADD pip.conf /home/${USER}/.config/pip/pip.conf
 
-COPY --chown=root:root --chmod=644 ["config/fish/conf.d/*", "/home/${USER}/.config/fish/conf.d/"]
-COPY --chown=root:root --chmod=644 ["config/fish/functions/*", "/home/${USER}/.config/fish/functions/"]
+COPY --chown=${USER}:${USER} --chmod=644 ["config/fish/conf.d/*", "/home/${USER}/.config/fish/conf.d/"]
+COPY --chown=${USER}:${USER} --chmod=644 ["config/fish/functions/*", "/home/${USER}/.config/fish/functions/"]
 
-RUN chown ${USER}:${USER} -R /home/${USER}/.config
+RUN chown ${USER}:${USER} -R /home/${USER}
 
-VOLUME /tmp/storage-run-1000/podman/
+VOLUME /home/${USER}/.local/share/containers
 
 USER ${USER}
 WORKDIR /home/${USER}
