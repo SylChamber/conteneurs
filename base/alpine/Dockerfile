@@ -3,7 +3,7 @@ ARG VARIANT=latest
 # FROM docker.io/library/alpine:${VARIANT}
 FROM public.ecr.aws/docker/library/alpine:${VARIANT}
 LABEL org.opencontainers.image.description="Image de base"
-LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
+LABEL org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
 LABEL org.opencontainers.image.base.name=public.ecr.aws/docker/library/alpine:${VARIANT}
 
 ARG LOCALE=fr-CA
@@ -72,6 +72,10 @@ RUN \
 
 COPY --chown=root:root --chmod=644 ["fish/conf.d/*", "/etc/fish/conf.d/"]
 COPY --chown=root:root --chmod=644 ["fish/functions/*", "/etc/fish/functions/"]
+
+RUN \
+    /usr/local/bin/eget tealdeer-rs/tealdeer --to /usr/local/bin/ && \
+    ln -s /usr/local/bin/tealdeer /usr/local/bin/tldr
 
 ENTRYPOINT [ "" ]
 CMD [ "/usr/bin/fish" ]
