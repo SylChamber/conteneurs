@@ -1,36 +1,35 @@
-# Image Alpine pour l'infrastructure en tant que code (IaC)
+# Image Alpine pour les opérations, DevOps, l'infrastructure en tant que code (IaC) et l'ingénierie de plateforme
 
 Cette image est basée sur [l'image de base Alpine](../../base/alpine/README.md). Elle contient des outils courants pour l'infrastructure en tant que code (IaC), tels que:
 
-* la CLI `aws`
 * `terraform`
 * `opentofu`
-* `packer`
-* le langage `python`
+* le langage `python` et `pipx`
 * `podman` et `podman-remote`
+* `kubectl`
+* `trivy`
+* `go-task`
 
-Elle définit un utilisateur `user` (modifiable par l'argument `USER`), sous lequel le conteneur s'exécute.
+Elle définit un utilisateur `ops` (modifiable par l'argument `USER`), sous lequel le conteneur s'exécute.
 
-L'utilisateur `user` détient les privilèges `sudo`.
+L'utilisateur `ops` détient les privilèges `sudo`.
 
 ## Génération de l'image
 
 Pour générer l'image Alpine, lancer:
 
 ```shell
-PACKER_VERSION=$(curl -sL https://api.github.com/repos/hashicorp/packer/releases/latest |
-  jq -r '.tag_name' | sed -r 's/v(.*)/\1/')
 TERRAFORM_VERSION=$(curl -sL https://api.github.com/repos/hashicorp/terraform/releases/latest |
   jq -r '.tag_name' | sed -r 's/v(.*)/\1/')
 TOFU_VERSION=$(curl -sL https://api.github.com/repos/opentofu/opentofu/releases/latest |
   jq -r '.tag_name' | sed -r 's/v(.*)/\1/')
 KUBECTL_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
-podman build -t sylchamber/iac \
-  -t sylchamber/iac:alpine \
-  -t sylchamber/iac:latest \
-  -t quay.io/sylchambr/iac:alpine \
-  -t quay.io/sylchambr/iac:latest \
-  --build-arg USER=user \
+podman build -t sylchamber/ops \
+  -t sylchamber/ops:alpine \
+  -t sylchamber/ops:latest \
+  -t ghcr.io/sylchamber/ops:alpine \
+  -t ghcr.io/sylchamber/ops:latest \
+  --build-arg USER=ops \
   --build-arg KUBECTL_VERSION=$KUBECTL_VERSION \
   --build-arg PACKER_VERSION=$PACKER_VERSION \
   --build-arg TERRAFORM_VERSION=$TERRAFORM_VERSION \
@@ -44,17 +43,15 @@ Créer un volume de données à la création du conteneur (les bons droits seron
 ```shell
 # podman
 podman run --name mon-conteneur -it --userns=keep-id \
-  -v home:/home/user \
-  -v $(realpath ~/.aws):/home/user/.aws \
-  -v $(realpath ~/.ssh):/home/user/.ssh \
-  quay.io/sylchambr/iac
+  -v home:/home/ops \
+  -v $(realpath ~/.ssh):/home/ops/.ssh \
+  ghcr.io/sylchamber/ops
 
 # docker
 docker run --name mon-conteneur -it \
-  -v home:/home/user \
-  -v $(realpath ~/.aws):/home/user/.aws \
+  -v home:/home/ops \
   -v $(realpath ~/.ssh):/home/user/.ssh \
-  quay.io/sylchambr/iac
+  ghcr.io/sylchamber/ops
 ```
 
 Par la suite, lancer le conteneur comme suit:
