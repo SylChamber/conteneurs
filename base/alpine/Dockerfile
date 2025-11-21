@@ -17,6 +17,7 @@ RUN apk update && apk upgrade && \
     fish fish-doc \
     acl acl-doc \
     bat bat-doc bat-fish-completion \
+    bind-tools \
     bottom bottom-doc bottom-fish-completion \
     broot broot-doc broot-fish-completion \
     btop btop-doc \
