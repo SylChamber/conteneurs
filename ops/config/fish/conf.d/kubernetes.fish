@@ -1,3 +1,6 @@
+set -gx KREW_ROOT $HOME/.local/share/krew
+set -x PATH $KREW_ROOT/bin $PATH
+
 # abbréviations pour Kubernetes
 if status is-interactive
     abbr -a -- k kubectl

@@ -1,0 +1,91 @@
+# Image Iac/DevOps/Platform Engineering
+ARG VARIANT=fedora
+
+FROM ghcr.io/sylchamber/base:${VARIANT} as download
+
+ARG KUBECTL_VERSION
+ARG HASHICORP_URL=https://releases.hashicorp.com
+ARG GIT_API=https://api.github.com/repos
+ARG TERRAFORM_VERSION
+ARG TOFU_VERSION
+
+# téléchargement d'outils reconnus via GitHub Releases
+# (dispos dans les repos Alpine pour la plupart)
+RUN \
+    mkdir -p /tmp/bin /tmp/doc/trivy && \
+    VERSION_REGEX='s/v(.*)/\1/' && \
+    TAG_KEY='.tag_name' && \
+    KUBECTL_VERSION=${KUBECTL_VERSION:-$(curl -sL https://dl.k8s.io/release/stable.txt)} && \
+    TERRAFORM_VERSION=${TERRAFORM_VERSION:-$(curl -sL ${GIT_API}/hashicorp/terraform/releases/latest | jq -r ${TAG_KEY} | sed -r "${VERSION_REGEX}")} && \
+    TOFU_VERSION=${TOFU_VERSION:-$(curl -sL ${GIT_API}/opentofu/opentofu/releases/latest | jq -r ${TAG_KEY} | sed -r "${VERSION_REGEX}")} &&\
+    curl -fL https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -o /tmp/bin/kubectl && \
+    curl -fL ${HASHICORP_URL}/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip && \
+    eget argoproj/argo-cd --to /tmp/bin/argocd && \
+    eget open-policy-agent/conftest --asset tar.gz --to /tmp/bin/ && \
+    eget norwoodj/helm-docs --asset tar.gz --to /tmp/bin/ && \
+    eget derailed/k9s --asset '.tar.gz' --asset '^sbom' --to /tmp/bin/ && \
+    eget kdash-rs/kdash --asset 'linux.tar.gz' --to /tmp/bin/ && \
+    eget kubernetes/kompose --asset tar.gz --to /tmp/bin/kompose && \
+    eget kubernetes-sigs/krew --file "./krew-linux_amd64" --to /tmp/bin/kubectl-krew && \
+    eget kubecolor/kubecolor --asset tar.gz --to /tmp/bin/ && \
+    eget controlplaneio/kubesec --to /tmp/bin/ && \
+    eget kubernetes-sigs/kustomize --to /tmp/bin/ && \
+    eget opentofu/opentofu --asset tar.gz --asset '^gpg' --asset '^pem' --asset '^sig' --file tofu --tag ${TOFU_VERSION} --to /tmp/bin/ && \
+    eget operator-framework/operator-sdk --asset sdk --to /tmp/bin/ && \
+    eget getsops/sops --asset '^sbom' --to /tmp/bin && \
+    eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --to /tmp/bin/ && \
+    eget aquasecurity/trivy --asset '64bit.tar.gz' --asset '^pem' --asset '^sig' --file 'contrib/*' --all --to /tmp/doc/trivy && \
+    unzip -od /tmp/bin /tmp/terraform.zip terraform && \
+    chmod 755 /tmp/bin/*
+
+# téléchargement séparé car eget ne reconnait pas les versions et télécharge systématiquement
+RUN \
+    eget etcd-io/etcd --file 'etcd?tl' --all --to /tmp/bin/ && \
+    eget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.18/openshift-client-linux.tar.gz --file oc --to /tmp/bin/oc418 && \
+    eget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.20/openshift-client-linux.tar.gz --file oc --to /tmp/bin/oc420 && \
+    eget tektoncd/cli --file tkn --to /tmp/bin/
+
+# image finale
+FROM ghcr.io/sylchamber/base:${VARIANT}
+LABEL org.opencontainers.image.base.name ghcr.io/sylchamber/base:${VARIANT}
+LABEL org.opencontainers.image.description="Image de IaC et d'ingénierie de plateforme"
+LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
+
+ARG USER=ops
+
+RUN \
+    dnf -y update && dnf -y install \
+    golang \
+    helm \
+    python3 \
+    python3-pip \
+    python3-virtualenv \
+    pipx && \
+    dnf clean all && \
+    mkdir -p /usr/local/share/doc/trivy
+
+COPY --from=download /tmp/bin/* /usr/local/bin/
+COPY --from=download /tmp/doc/trivy/* /usr/local/share/doc/trivy/
+
+RUN \
+    useradd --shell /usr/bin/fish --groups wheel --create-home ${USER} && \
+    mkdir -p \
+    /home/${USER}/.config/fish/conf.d \
+    /home/${USER}/.config/fish/functions \
+    /home/${USER}/.local/bin \
+    /home/${USER}/.local/share/krew && \
+    ln -s /usr/local/bin/oc420 /home/${USER}/.local/bin/oc
+
+ADD config/podman-tui.conf /home/${USER}/.config/podman-tui/podman-tui.conf
+ADD config/pip.conf /home/${USER}/.config/pip/pip.conf
+
+COPY --chown=${USER}:${USER} --chmod=644 ["config/fish/conf.d/*", "/home/${USER}/.config/fish/conf.d/"]
+COPY --chown=${USER}:${USER} --chmod=644 ["config/fish/functions/*", "/home/${USER}/.config/fish/functions/"]
+
+RUN chown ${USER}:${USER} -R /home/${USER}
+
+VOLUME /home/${USER}/.local/share/containers
+
+USER ${USER}
+WORKDIR /home/${USER}
+CMD [ "/usr/bin/fish" ]

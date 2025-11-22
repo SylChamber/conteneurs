@@ -39,8 +39,12 @@ tasks:
     vars:
       IMAGE: ops
       VARIANT: fedora
+      USER: ops
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+        vars:
+          USER:
+            ref: .USER
 
   build:*:*:
     desc: Construit et étiquette une image pour l'image et la variante spécifiées
@@ -63,6 +67,7 @@ tasks:
           -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
           -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
           -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest \
+          --build-arg USER={{.USER}} \
           {{.IMAGE}}
 
   push:all:

@@ -1,15 +1,5 @@
 # abréviations pour docker et podman
 if status is-interactive
-  abbr -a -- d docker
-  abbr -a -- db 'docker build'
-  abbr -a -- dc 'docker container'
-  abbr -a -- di 'docker image'
-  abbr -a -- dp 'docker pull'
-  abbr -a -- dps 'docker ps'
-  abbr -a -- dr 'docker container run'
-  abbr -a -- dv 'docker volume'
-  abbr -a -- fx 'docker exec'
-
   abbr -a -- p podman
   abbr -a -- pb 'podman build'
   abbr -a -- pc 'podman container'
