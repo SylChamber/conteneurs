@@ -1,0 +1,103 @@
+version: "3"
+
+vars:
+  OWNER: sylchamber
+  CLI_OCI: podman
+  REGISTRY: ghcr.io
+
+set: [pipefail]
+
+tasks:
+  default:
+    desc: Affiche les tâches disponibles
+    cmd: task -l
+
+  ghcr:login:
+    desc: S'authentifie au registre GitHub Container Registry
+    vars:
+      GITHUB_TOKEN:
+        sh: echo $GITHUB_TOKEN
+    requires:
+      vars: [GITHUB_TOKEN]
+    cmd: |
+      echo {{.GITHUB_TOKEN}} | {{.CLI_OCI}} login -u {{.OWNER}} --password-stdin {{.REGISTRY}}
+
+  build:all:
+    desc: Construit et étiquette toutes les images
+    deps: [build:base]
+
+  build:base:
+    desc: Construit et étiquette sylchamber/base
+    vars:
+      IMAGE: base
+      VARIANT: fedora
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+
+  build:ops:
+    desc: Construit et étiquette l'image sylchamber/ops
+    vars:
+      IMAGE: ops
+      VARIANT: fedora
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+
+  build:*:*:
+    desc: Construit et étiquette une image pour l'image et la variante spécifiées
+    requires:
+      vars:
+        - name: IMAGE
+          enum: [base, ops]
+        - name: VARIANT
+          enum: [fedora]
+    vars:
+      IMAGE: "{{index .MATCH 0}}"
+      VARIANT: "{{index .MATCH 1}}"
+    cmds:
+      - echo -e "Construction de l'image {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}:" >&2
+      - |
+        {{.CLI_OCI}} build \
+          -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+          -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+          -t {{.OWNER}}/{{.IMAGE}}:latest \
+          -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+          -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+          -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest \
+          {{.IMAGE}}
+
+  push:all:
+    desc: Publie toutes les images
+    deps: [push:base, push:ops]
+
+  push:base:
+    desc: Publie l'image sylchamber/base sur {{.REGISTRY}}
+    vars:
+      IMAGE: base
+      VARIANT: fedora
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  push:ops:
+    desc: Publie l'image sylchamber/ops sur {{.REGISTRY}}
+    vars:
+      IMAGE: ops
+      VARIANT: fedora
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  push:*:*:
+    desc: Publie l'image spécifiée sur {{.REGISTRY}}
+    requires:
+      vars:
+        - name: IMAGE
+          enum: [base, ops]
+        - name: VARIANT
+          enum: [fedora]
+    vars:
+      IMAGE: "{{index .MATCH 0}}"
+      VARIANT: "{{index .MATCH 1}}"
+    cmds:
+      - echo "Publication de l'image {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}" >&2
+      - "{{.CLI_OCI}} push {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}"
+      - "{{.CLI_OCI}} push {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest"
+      - "{{.CLI_OCI}} push {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest"
