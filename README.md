@@ -26,3 +26,9 @@ Ensuite, pour s'authentifier:
 ```shell
 echo $GITHUB_TOKEN | podman login ghcr.io -u <User> --password-stdin
 ```
+
+Ou lancer la commande:
+
+```shell
+task ghcr:login
+```
