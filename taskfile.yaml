@@ -4,6 +4,7 @@ vars:
   OWNER: sylchamber
   CLI_OCI: podman
   REGISTRY: ghcr.io
+  OPS_DOWNLOAD_VOLUME: ops-build-downloads
 
 set: [pipefail]
 
@@ -28,26 +29,6 @@ tasks:
 
   build:base:
     desc: Construit et étiquette sylchamber/base
-    vars:
-      IMAGE: base
-      VARIANT: fedora
-    cmds:
-      - task: build:{{.IMAGE}}:{{.VARIANT}}
-
-  build:ops:
-    desc: Construit et étiquette l'image sylchamber/ops
-    vars:
-      IMAGE: ops
-      VARIANT: fedora
-      USER: ops
-    cmds:
-      - task: build:{{.IMAGE}}:{{.VARIANT}}
-        vars:
-          USER:
-            ref: .USER
-
-  build:*:*:
-    desc: Construit et étiquette une image pour l'image et la variante spécifiées
     requires:
       vars:
         - name: IMAGE
@@ -55,20 +36,51 @@ tasks:
         - name: VARIANT
           enum: [fedora]
     vars:
-      IMAGE: "{{index .MATCH 0}}"
-      VARIANT: "{{index .MATCH 1}}"
-    cmds:
-      - echo -e "Construction de l'image {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}:" >&2
-      - |
-        {{.CLI_OCI}} build \
-          -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-          -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
-          -t {{.OWNER}}/{{.IMAGE}}:latest \
-          -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-          -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
-          -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest \
-          --build-arg USER={{.USER}} \
-          {{.IMAGE}}
+      IMAGE: base
+      VARIANT: fedora
+    cmd: |
+      {{.CLI_OCI}} build \
+      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+      -t {{.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest
+      {{.IMAGE}}
+
+  build:ops:
+    desc: Construit et étiquette l'image sylchamber/ops
+    deps: [build-deps:ops]
+    requires:
+      vars:
+        - name: IMAGE
+          enum: [base, ops]
+        - name: VARIANT
+          enum: [fedora]
+    vars:
+      IMAGE: ops
+      VARIANT: fedora
+      USER: ops
+      DOWNLOADS_PATH:
+        sh: |
+          {{.CLI_OCI}} volume inspect {{.OPS_DOWNLOAD_VOLUME}} --format {{"'{{.Mountpoint}}'"}}
+    cmd: |
+      {{.CLI_OCI}} build \
+      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+      -t {{.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest \
+      --build-arg USER={{.USER}} \
+      --volume {{.DOWNLOADS_PATH}}:/downloads \
+      {{.IMAGE}}
+
+  build-deps:ops:
+    internal: true
+    desc: Contruit les prérequis à build ops
+    cmd: |
+      {{.CLI_OCI}} volume create --ignore {{.OPS_DOWNLOAD_VOLUME}}
 
   push:all:
     desc: Publie toutes les images
