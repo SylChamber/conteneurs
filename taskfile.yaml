@@ -45,7 +45,7 @@ tasks:
       -t {{.OWNER}}/{{.IMAGE}}:latest \
       -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
       -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
-      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest
+      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest \
       {{.IMAGE}}
 
   build:ops:
