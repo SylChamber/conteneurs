@@ -44,6 +44,7 @@ RUN \
     gh \
     #glibc-langpack-${LANGPACK} \
     #glibc-locale-source \
+    glow \
     go-task \
     gnupg2 pinentry pinentry-tty \
     htop \
@@ -72,6 +73,7 @@ RUN \
     yq \
     zip \
     --exclude container-selinux && \
+    dnf clean all && \
     mkdir -p /etc/skel/.config/containers
 
 COPY user-containers.conf /etc/skel/.config/containers/containers.conf
