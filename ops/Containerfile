@@ -96,4 +96,10 @@ VOLUME /home/${USER}/.local/share/containers
 
 USER ${USER}
 WORKDIR /home/${USER}
+
+RUN \
+    KREW_ROOT=/home/${USER}/.local/share/krew kubectl krew update && \
+    KREW_ROOT=/home/${USER}/.local/share/krew kubectl krew install neat && \
+    pipx install checkov
+
 CMD [ "/usr/bin/fish" ]
