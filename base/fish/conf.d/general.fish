@@ -1,4 +1,5 @@
 # variables d'environnement générales
+set -x PATH $HOME/.local/bin $PATH
 set -gx EDITOR micro
 
 # abréviations et commandes générales pour sessions interactives
