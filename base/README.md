@@ -56,3 +56,8 @@ podman run --device /dev/fuse --rm -it ghcr.io/sylchamber/base
 ```
 
 Cet usage est toutefois prévu pour une image dérivée qui définirait un utilisateur non root.
+
+## Références
+
+* [How to use Podman inside of a container - Red Hat Blog](https://www.redhat.com/en/blog/podman-inside-container)
+  * [containers/image_build/podman](https://github.com/containers/image_build/tree/main/podman) - code source de l'article
