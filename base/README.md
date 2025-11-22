@@ -15,6 +15,20 @@ Image de base Fedora contenant le shell `fish`, les `man-pages`, le prompt [Star
 
 Elle inclut également une configuration par défaut de `fish` pour les utilisateurs sous `/etc/fish`.
 
+## Construction et publication
+
+Pour construire l'image, lancer:
+
+```shell
+task build:base
+```
+
+et pour publier sur `ghcr.io`, lancer:
+
+```shell
+task push:base
+```
+
 ## Utilisation d'un volume
 
 Plutôt que d'écrire des fichiers de profil dans l'image elle-même, envisager d'utiliser un volume de données monté comme `/home`. Dans quel cas, créer au préalable le volume et y importer les fichiers:
