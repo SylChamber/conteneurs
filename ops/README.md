@@ -1,11 +1,13 @@
 # Image pour les opérations, DevOps, l'infrastructure en tant que code (IaC) et l'ingénierie de plateforme
 
-Cette image est basée sur [l'image de base Fedora](../../base/README.md). Elle contient des outils courants pour l'infrastructure en tant que code (IaC), tels que:
+Cette image est basée sur [l'image de base Alpine](../../base/README.md). Elle contient des outils courants pour l'infrastructure en tant que code (IaC), tels que:
 
 * `terraform`
 * `opentofu`
 * le langage `python` et `pipx`
+* le langage `go`
 * `kubectl`
+* `oc` (versions 4.18 et 4.20)
 * `trivy`
 
 Elle définit un utilisateur `ops` (modifiable par l'argument `USER`), sous lequel le conteneur s'exécute.
@@ -34,21 +36,20 @@ podman build -t sylchamber/ops \
   --build-arg TOFU_VERSION=$TOFU_VERSION .
 ```
 
+ou lancer:
+
+```shell
+task build:ops
+```
+
 ## Utilisation
 
 Créer un volume de données à la création du conteneur (les bons droits seront accordés selon le point de montage).
 
 ```shell
-# podman
 podman run --name mon-conteneur -it --userns=keep-id \
   -v home:/home/ops \
   -v $(realpath ~/.ssh):/home/ops/.ssh \
-  ghcr.io/sylchamber/ops
-
-# docker
-docker run --name mon-conteneur -it \
-  -v home:/home/ops \
-  -v $(realpath ~/.ssh):/home/user/.ssh \
   ghcr.io/sylchamber/ops
 ```
 

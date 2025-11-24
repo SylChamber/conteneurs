@@ -77,7 +77,6 @@ tasks:
       {{.IMAGE}}
 
   build-deps:ops:
-    internal: true
     desc: Contruit les prérequis à build ops
     cmd: |
       {{.CLI_OCI}} volume create --ignore {{.OPS_DOWNLOAD_VOLUME}}
