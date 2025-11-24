@@ -34,10 +34,10 @@ tasks:
         - name: IMAGE
           enum: [base, ops]
         - name: VARIANT
-          enum: [fedora]
+          enum: [alpine]
     vars:
       IMAGE: base
-      VARIANT: fedora
+      VARIANT: alpine
     cmd: |
       {{.CLI_OCI}} build \
       -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
@@ -56,10 +56,10 @@ tasks:
         - name: IMAGE
           enum: [base, ops]
         - name: VARIANT
-          enum: [fedora]
+          enum: [alpine]
     vars:
       IMAGE: ops
-      VARIANT: fedora
+      VARIANT: alpine
       USER: ops
       DOWNLOADS_PATH:
         sh: |
@@ -90,7 +90,7 @@ tasks:
     desc: Publie l'image sylchamber/base sur {{.REGISTRY}}
     vars:
       IMAGE: base
-      VARIANT: fedora
+      VARIANT: alpine
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
@@ -98,7 +98,7 @@ tasks:
     desc: Publie l'image sylchamber/ops sur {{.REGISTRY}}
     vars:
       IMAGE: ops
-      VARIANT: fedora
+      VARIANT: alpine
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
@@ -109,7 +109,7 @@ tasks:
         - name: IMAGE
           enum: [base, ops]
         - name: VARIANT
-          enum: [fedora]
+          enum: [alpine]
     vars:
       IMAGE: "{{index .MATCH 0}}"
       VARIANT: "{{index .MATCH 1}}"
