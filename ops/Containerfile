@@ -1,6 +1,7 @@
 # Image Iac/DevOps/Platform Engineering
-ARG VARIANT=fedora
+ARG VARIANT=alpine
 
+# étape de téléchargement de binaires
 FROM ghcr.io/sylchamber/base:${VARIANT} as download
 
 ARG KUBECTL_VERSION
@@ -59,19 +60,20 @@ RUN \
 FROM ghcr.io/sylchamber/base:${VARIANT}
 LABEL org.opencontainers.image.base.name ghcr.io/sylchamber/base:${VARIANT}
 LABEL org.opencontainers.image.description="Image de IaC et d'ingénierie de plateforme"
-LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
+LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs/ops
 
 ARG USER=ops
 
-RUN \
-    dnf -y update && dnf -y install \
-    golang \
-    helm \
-    python3 \
-    python3-pip \
-    python3-virtualenv \
-    pipx && \
-    dnf clean all && \
+RUN apk add --no-cache \
+    fuse-overlayfs \
+    go go-doc \
+    go-task go-task-doc go-task-fishcomp go-task-task \
+    helm helm-fish-completion \
+    python3 python3-doc \
+    py3-pip py3-pip-doc \
+    py3-virtualenv \
+    pipx \
+    sops && \
     mkdir -p /usr/local/share/doc/trivy
 
 COPY --from=download /tmp/downloads/bin/* /usr/local/bin/
@@ -83,16 +85,18 @@ RUN \
     /home/${USER}/.config/fish/conf.d \
     /home/${USER}/.config/fish/functions \
     /home/${USER}/.local/bin \
-    /home/${USER}/.local/share/krew && \
+    /home/${USER}/.local/share/fish \
+    /home/${USER}/.local/share/krew \
+    /tmp/storage-run-1000/podman && \
     ln -s /usr/local/bin/oc420 /home/${USER}/.local/bin/oc
 
 COPY config/pip.conf /home/${USER}/.config/pip/pip.conf
 COPY --chmod=644 ["config/fish/conf.d/*", "/home/${USER}/.config/fish/conf.d/"]
 COPY --chmod=644 ["config/fish/functions/*", "/home/${USER}/.config/fish/functions/"]
 
-RUN chown ${USER}:${USER} -R /home/${USER}
+RUN chown ${USER}:${USER} -R /home/${USER} /tmp/storage-run-1000
 
-VOLUME /home/${USER}/.local/share/containers
+VOLUME /tmp/storage-run-1000/podman/
 
 USER ${USER}
 WORKDIR /home/${USER}
