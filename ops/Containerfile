@@ -60,7 +60,7 @@ RUN \
 FROM ghcr.io/sylchamber/base:${VARIANT}
 LABEL org.opencontainers.image.base.name ghcr.io/sylchamber/base:${VARIANT}
 LABEL org.opencontainers.image.description="Image de IaC et d'ingénierie de plateforme"
-LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs/ops
+LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 
 ARG USER=ops
 

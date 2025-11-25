@@ -4,7 +4,7 @@ ARG VARIANT=latest
 # FROM docker.io/library/alpine:${VARIANT}
 FROM public.ecr.aws/docker/library/alpine:${VARIANT}
 LABEL org.opencontainers.image.description="Image de base"
-LABEL org.opencontainers.image.source=https://github.com/SylChamber/conteneurs/base
+LABEL org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
 LABEL org.opencontainers.image.base.name=docker.io/library/alpine:${VARIANT}
 
 ARG LOCALE=fr-CA
