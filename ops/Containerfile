@@ -103,7 +103,14 @@ WORKDIR /home/${USER}
 
 RUN \
     KREW_ROOT=/home/${USER}/.local/share/krew kubectl krew update && \
-    KREW_ROOT=/home/${USER}/.local/share/krew kubectl krew install neat && \
+    KREW_ROOT=/home/${USER}/.local/share/krew kubectl krew install \
+    cert-manager \
+    neat \
+    operator \
+    rbac-lookup \
+    rbac-tool \
+    view-cert \
+    who-can && \
     pipx install checkov
 
 CMD [ "/usr/bin/fish" ]
