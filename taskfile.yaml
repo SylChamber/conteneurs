@@ -3,7 +3,14 @@ version: "3"
 vars:
   OWNER: sylchamber
   CLI_OCI: podman
-  REGISTRY: ghcr.io
+  GHCR:
+    map:
+      REGISTRY: ghcr.io
+      OWNER: sylchamber
+  QUAY:
+    map:
+      REGISTRY: quay.io
+      OWNER: sylchambr
   OPS_DOWNLOAD_VOLUME: ops-build-downloads
 
 set: [pipefail]
@@ -13,15 +20,15 @@ tasks:
     desc: Affiche les tâches disponibles
     cmd: task -l
 
-  ghcr:login:
+  auth:ghcr:
     desc: S'authentifie au registre GitHub Container Registry
-    vars:
-      GITHUB_TOKEN:
-        sh: echo $GITHUB_TOKEN
-    requires:
-      vars: [GITHUB_TOKEN]
     cmd: |
-      echo {{.GITHUB_TOKEN}} | {{.CLI_OCI}} login -u {{.OWNER}} --password-stdin {{.REGISTRY}}
+      echo $GITHUB_TOKEN | {{.CLI_OCI}} login -u {{.GHCR.OWNER}} --password-stdin {{.GHCR.REGISTRY}}
+
+  auth:quay:
+    desc: S'authentifie au registre Quay.io
+    cmd: |
+      echo $QUAY_CLI_PASSWORD | {{.CLI_OCI}} login -u {{.QUAY.OWNER}} --password-stdin {{.QUAY.REGISTRY}}
 
   build:all:
     desc: Construit et étiquette toutes les images
@@ -43,9 +50,12 @@ tasks:
       -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
       -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
       -t {{.OWNER}}/{{.IMAGE}}:latest \
-      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
-      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
       {{.IMAGE}}
 
   build:ops:
@@ -69,9 +79,12 @@ tasks:
       -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
       -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
       -t {{.OWNER}}/{{.IMAGE}}:latest \
-      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
-      -t {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
       --build-arg USER={{.USER}} \
       --volume {{.DOWNLOADS_PATH}}:/downloads \
       {{.IMAGE}}
@@ -86,7 +99,7 @@ tasks:
     deps: [push:base, push:ops]
 
   push:base:
-    desc: Publie l'image sylchamber/base sur {{.REGISTRY}}
+    desc: Publie l'image sylchamber/base
     vars:
       IMAGE: base
       VARIANT: alpine
@@ -94,7 +107,7 @@ tasks:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   push:ops:
-    desc: Publie l'image sylchamber/ops sur {{.REGISTRY}}
+    desc: Publie l'image sylchamber/ops
     vars:
       IMAGE: ops
       VARIANT: alpine
@@ -102,7 +115,7 @@ tasks:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   push:*:*:
-    desc: Publie l'image spécifiée sur {{.REGISTRY}}
+    desc: Publie l'image spécifiée
     requires:
       vars:
         - name: IMAGE
@@ -114,6 +127,9 @@ tasks:
       VARIANT: "{{index .MATCH 1}}"
     cmds:
       - echo "Publication de l'image {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}" >&2
-      - "{{.CLI_OCI}} push {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}"
-      - "{{.CLI_OCI}} push {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest"
-      - "{{.CLI_OCI}} push {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:latest"
+      - "{{.CLI_OCI}} push {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}}"
+      - "{{.CLI_OCI}} push {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest"
+      - "{{.CLI_OCI}} push {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest"
+      - "{{.CLI_OCI}} push {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}}"
+      - "{{.CLI_OCI}} push {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest"
+      - "{{.CLI_OCI}} push {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest"
