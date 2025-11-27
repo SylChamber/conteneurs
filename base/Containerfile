@@ -19,7 +19,7 @@ RUN \
     apk-tools-doc \
     acl acl-doc \
     bat bat-doc bat-fish-completion \
-    bind-tools \
+    bind-tools bind-doc \
     bottom bottom-doc bottom-fish-completion \
     broot broot-doc broot-fish-completion \
     btop btop-doc \
@@ -53,6 +53,7 @@ RUN \
     podman-remote \
     procs procs-doc procs-fish-completion \
     ripgrep ripgrep-doc ripgrep-fish-completion \
+    sed-doc \
     sudo \
     shadow \
     starship \
