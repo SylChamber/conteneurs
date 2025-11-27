@@ -32,7 +32,7 @@ tasks:
 
   build:all:
     desc: Construit et étiquette toutes les images
-    deps: [build:base]
+    deps: [build:base, build:ops]
 
   build:base:
     desc: Construit et étiquette sylchamber/base
