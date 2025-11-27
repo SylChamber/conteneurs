@@ -25,6 +25,7 @@ RUN \
     btop btop-doc \
     ca-certificates ca-certificates-doc \
     chezmoi chezmoi-fish-completion \
+    containers-common-doc \
     curl curl-doc curl-fish-completion \
     dust dust-doc dust-fish-completion \
     dysk \
