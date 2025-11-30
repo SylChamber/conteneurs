@@ -1,0 +1,52 @@
+# Toolbox de base Alpine
+ARG VARIANT=9
+FROM quay.io/toolbx-images/almalinux-toolbox:${VARIANT}
+LABEL org.opencontainers.image.description="Image toolbox AlmaLinux de base"
+LABEL org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
+LABEL org.opencontainers.image.base.name=quay.io/toolbx-images/almalinux-toolbox:${VARIANT}
+LABEL com.github.containers.toolbox="true"
+
+ARG EGET_VERSION=1.3.4
+ARG TLDR_TAG=v1.8.1
+
+RUN \
+    dnf -y install \
+    fish \
+    age \
+    bat \
+    bind-utils \
+    btop \
+    chezmoi \
+    fastfetch \
+    fd-find \
+    gdu \
+    git-credential-oauth \
+    gh \
+    pinentry pinentry-tty \
+    htop \
+    hyperfine \
+    jq \
+    nano \
+    nwipe \
+    procs \
+    ripgrep \
+    vim-enhanced \
+    yq
+
+COPY --chmod=644 ["config/fish/conf.d/*", "/etc/fish/conf.d/"]
+COPY --chmod=644 ["config/fish/functions/*", "/etc/fish/functions/"]
+
+RUN \
+    wget -qO- https://github.com/zyedidia/eget/releases/download/v${EGET_VERSION}/eget-${EGET_VERSION}-linux_amd64.tar.gz | \
+    tar xzvf - -C /usr/local/bin/ --strip-components 1 --exclude '*/LICENSE' --exclude '*/README.md' && \
+    mkdir -p /usr/local/share/man/man1 && \
+    mv /usr/local/bin/eget.1 /usr/local/share/man/man1/ && \
+    echo '%wheel ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/wheel-nopasswd && \
+    sed -ri 's|^(root:)(.*)/bin/sh|\1\2/usr/bin/fish|' /etc/passwd
+
+RUN \
+    export EGET_BIN=/usr/local/bin && \
+    eget tealdeer-rs/tealdeer --tag ${TLDR_TAG} && \
+    ln -s /usr/local/bin/tealdeer /usr/local/bin/tldr
+
+ENTRYPOINT []
