@@ -49,6 +49,21 @@ tasks:
       -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
       {{.IMAGE}}
 
+  build:almalinux-toolbox-ops:
+    desc: Construit et étiquette sylchamber/almalinux-toolbox-ops
+    vars:
+      IMAGE: almalinux-toolbox-ops
+      VARIANT: "9"
+    cmd: |
+      {{.CLI_OCI}} build \
+      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
+      {{.IMAGE}}
+
   build:base:
     desc: Construit et étiquette sylchamber/base
     requires:
@@ -121,6 +136,14 @@ tasks:
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
+  push:almalinux-toolbox-ops:
+    desc: Publie l'image sylchamber/almalinux-toolbox-ops
+    vars:
+      IMAGE: almalinux-toolbox-ops
+      VARIANT: "9"
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
   push:base:
     desc: Publie l'image sylchamber/base
     vars:
@@ -142,7 +165,7 @@ tasks:
     requires:
       vars:
         - name: IMAGE
-          enum: [almalinux-toolbox, base, ops]
+          enum: [almalinux-toolbox, almalinux-toolbox-ops, base, ops]
         - name: VARIANT
           enum: ["9", alpine]
     vars:

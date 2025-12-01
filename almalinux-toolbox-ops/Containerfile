@@ -1,0 +1,81 @@
+# Image toolbox Iac/DevOps/Platform Engineering
+ARG VARIANT=9
+
+# étape de téléchargement de binaires
+FROM ghcr.io/sylchamber/almalinux-toolbox:${VARIANT} as download
+
+ARG KUBECTL_VERSION
+ARG HASHICORP_URL=https://releases.hashicorp.com
+ARG GIT_API=https://api.github.com/repos
+ARG GOTASK_TAG=v3.45.5
+ARG SOPS_TAG=v3.11.0
+ARG TERRAFORM_VERSION
+ARG TOFU_VERSION
+
+# Dossier bind mount utilisé comme cache pour les fichiers téléchargés
+# ainsi, eget ne téléchargera que les binaires plus récents
+# si désiré, lancer 'podman build' avec un volume nommé:
+#   -v $(podman volume create --ignore ops-build-downloads && \
+#       podman volume inspect ops-build-downloads --format '{{.Mountpoint}}'):/downloads
+VOLUME /downloads
+WORKDIR /downloads
+
+# téléchargement d'outils reconnus via GitHub Releases
+# (dispos dans les repos Alpine pour la plupart)
+RUN \
+    mkdir -p /downloads/bin /downloads/doc/trivy && \
+    eget argoproj/argo-cd --upgrade-only --to bin/argocd && \
+    eget open-policy-agent/conftest --asset tar.gz --upgrade-only --to bin/ && \
+    eget charmbracelet/glow --asset '^sbom' --to bin/ && \
+    eget go-task/task --asset tar.gz --tag ${GOTASK_TAG} --to bin/ && \
+    eget norwoodj/helm-docs --asset tar.gz --upgrade-only --to bin/ && \
+    eget derailed/k9s --asset '.tar.gz' --asset '^sbom' --upgrade-only --to bin/ && \
+    eget kdash-rs/kdash --asset 'linux.tar.gz' --upgrade-only --to bin/ && \
+    eget kubernetes/kompose --asset tar.gz --to bin/kompose && \
+    eget kubernetes-sigs/krew --file "./krew-linux_amd64" --to bin/kubectl-krew && \
+    eget kubecolor/kubecolor --asset tar.gz --upgrade-only --to bin/ && \
+    eget controlplaneio/kubesec --upgrade-only --to bin/ && \
+    eget kubernetes-sigs/kustomize --upgrade-only --to bin/ && \
+    eget operator-framework/operator-sdk --asset sdk --upgrade-only --to bin/ && \
+    eget getsops/sops --asset '^sbom' --tag ${SOPS_TAG} --to bin/ && \
+    eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --upgrade-only --to bin/ && \
+    eget aquasecurity/trivy --asset '64bit.tar.gz' --asset '^pem' --asset '^sig' --file 'contrib/*' --all --to doc/trivy
+
+# téléchargement séparé car eget ne reconnait pas les versions et télécharge systématiquement
+# copie des fichiers dans /tmp/downloads puisque l'image finale n'a pas accès aux bind mounts des stages précédents
+RUN \
+    VERSION_REGEX='s/v(.*)/\1/' && \
+    TAG_KEY='.tag_name' && \
+    KUBECTL_VERSION=${KUBECTL_VERSION:-$(curl -sL https://dl.k8s.io/release/stable.txt)} && \
+    TERRAFORM_VERSION=${TERRAFORM_VERSION:-$(curl -sL ${GIT_API}/hashicorp/terraform/releases/latest | jq -r ${TAG_KEY} | sed -r "${VERSION_REGEX}")} && \
+    TOFU_VERSION=${TOFU_VERSION:-$(curl -sL ${GIT_API}/opentofu/opentofu/releases/latest | jq -r ${TAG_KEY} | sed -r "${VERSION_REGEX}")} &&\
+    curl -fL https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -o bin/kubectl && \
+    curl -fL ${HASHICORP_URL}/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip && \
+    eget etcd-io/etcd --file 'etcd?tl' --all --upgrade-only --to bin/ && \
+    eget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.18/openshift-client-linux.tar.gz --file oc --to bin/oc418 && \
+    eget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.20/openshift-client-linux.tar.gz --file oc --to bin/oc420 && \
+    eget opentofu/opentofu --asset tar.gz --asset '^gpg' --asset '^pem' --asset '^sig' --file tofu --tag ${TOFU_VERSION} --upgrade-only --to bin/ && \
+    eget tektoncd/cli --file tkn --upgrade-only --to bin/ && \
+    unzip -od bin/ /tmp/terraform.zip terraform && \
+    chmod 755 bin/* && \
+    cp -R /downloads /tmp/
+
+# image finale
+FROM ghcr.io/sylchamber/almalinux-toolbox:${VARIANT}
+LABEL org.opencontainers.image.base.name ghcr.io/sylchamber/almalinux-toolbox:${VARIANT}
+LABEL org.opencontainers.image.description="Image de IaC et d'ingénierie de plateforme"
+LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
+LABEL com.github.containers.toolbox="true"
+
+RUN dnf -y install \
+    golang \
+    helm \
+    python3-pip \
+    python3-virtualenv \
+    pipx && \
+    mkdir -p /usr/local/share/doc/trivy
+
+COPY --from=download /tmp/downloads/bin/* /usr/local/bin/
+COPY --from=download /tmp/downloads/doc/trivy/* /usr/local/share/doc/trivy/
+COPY --chmod=644 ["config/fish/conf.d/*", "/etc/fish/conf.d/"]
+COPY --chmod=644 ["config/fish/functions/*", "/etc/fish/functions/"]
