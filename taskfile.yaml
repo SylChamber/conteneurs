@@ -113,6 +113,14 @@ tasks:
     desc: Publie toutes les images
     deps: [push:base, push:ops]
 
+  push:almalinux-toolbox:
+    desc: Publie l'image sylchamber/almalinux-toolbox
+    vars:
+      IMAGE: almalinux-toolbox
+      VARIANT: "9"
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
   push:base:
     desc: Publie l'image sylchamber/base
     vars:
@@ -134,17 +142,15 @@ tasks:
     requires:
       vars:
         - name: IMAGE
-          enum: [base, ops]
+          enum: [almalinux-toolbox, base, ops]
         - name: VARIANT
-          enum: [alpine]
+          enum: ["9", alpine]
     vars:
       IMAGE: "{{index .MATCH 0}}"
       VARIANT: "{{index .MATCH 1}}"
     cmds:
       - echo "Publication de l'image {{.REGISTRY}}/{{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}" >&2
       - "{{.CLI_OCI}} push {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}}"
-      - "{{.CLI_OCI}} push {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest"
       - "{{.CLI_OCI}} push {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest"
       - "{{.CLI_OCI}} push {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}}"
-      - "{{.CLI_OCI}} push {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest"
       - "{{.CLI_OCI}} push {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest"
