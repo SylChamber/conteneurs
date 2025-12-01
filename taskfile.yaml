@@ -34,6 +34,21 @@ tasks:
     desc: Construit et étiquette toutes les images
     deps: [build:base, build:ops]
 
+  build:almalinux-toolbox:
+    desc: Construit et étiquette sylchamber/almalinux-toolbox
+    vars:
+      IMAGE: almalinux-toolbox
+      VARIANT: "9"
+    cmd: |
+      {{.CLI_OCI}} build \
+      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
+      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
+      {{.IMAGE}}
+
   build:base:
     desc: Construit et étiquette sylchamber/base
     requires:

@@ -7,9 +7,17 @@ LABEL org.opencontainers.image.base.name=quay.io/toolbx-images/almalinux-toolbox
 LABEL com.github.containers.toolbox="true"
 
 ARG EGET_VERSION=1.3.4
+ARG BROOT_TAG=1.53.0
+ARG BTM_TAG=0.11.4
+ARG DYSK_TAG=3.4.0
+ARG LSD_TAG=v1.2.0
+ARG MICRO_TAG=2.0.14
+ARG STARSHIP_TAG=v1.24.1
 ARG TLDR_TAG=v1.8.1
+ARG TOPGRADE_TAG=v16.6.0
 
 RUN \
+    dnf -y upgrade && \
     dnf -y install \
     fish \
     age \
@@ -31,7 +39,8 @@ RUN \
     procs \
     ripgrep \
     vim-enhanced \
-    yq
+    yq && \
+    dnf clean all
 
 COPY --chmod=644 ["config/fish/conf.d/*", "/etc/fish/conf.d/"]
 COPY --chmod=644 ["config/fish/functions/*", "/etc/fish/functions/"]
@@ -46,7 +55,14 @@ RUN \
 
 RUN \
     export EGET_BIN=/usr/local/bin && \
+    eget ClementTsang/bottom --asset gnu.tar.gz --file 'btm' --tag ${BTM_TAG} && \
+    eget Canop/broot --file 'x86_64-unknown-linux-gnu/broot' --tag ${BROOT_TAG} && \
+    eget Canop/dysk --file 'build/x86_64-unknown-linux-gnu/dysk' --tag ${DYSK_TAG}  && \
+    eget lsd-rs/lsd --asset gnu.tar.gz --tag ${LSD_TAG} && \
+    eget zyedidia/micro --asset linux64.tar.gz --asset '^.sha' --tag ${MICRO_TAG} && \
+    eget starship/starship --asset gnu.tar.gz --tag ${STARSHIP_TAG} && \
     eget tealdeer-rs/tealdeer --tag ${TLDR_TAG} && \
-    ln -s /usr/local/bin/tealdeer /usr/local/bin/tldr
+    ln -s /usr/local/bin/tealdeer /usr/local/bin/tldr && \
+    eget topgrade-rs/topgrade --asset gnu.tar.gz --tag ${TOPGRADE_TAG}
 
 ENTRYPOINT []
