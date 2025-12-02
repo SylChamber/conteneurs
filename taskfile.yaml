@@ -38,7 +38,7 @@ tasks:
     desc: Construit et étiquette sylchamber/almalinux-toolbox
     vars:
       IMAGE: almalinux-toolbox
-      VARIANT: "9"
+      VARIANT: "10"
     cmd: |
       {{.CLI_OCI}} build \
       -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
@@ -53,7 +53,7 @@ tasks:
     desc: Construit et étiquette sylchamber/almalinux-toolbox-ops
     vars:
       IMAGE: almalinux-toolbox-ops
-      VARIANT: "9"
+      VARIANT: "10"
     cmd: |
       {{.CLI_OCI}} build \
       -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
@@ -126,13 +126,13 @@ tasks:
 
   push:all:
     desc: Publie toutes les images
-    deps: [push:base, push:ops]
+    deps: [push:almalinux-toolbox, push:almalinux-toolbox-ops]
 
   push:almalinux-toolbox:
     desc: Publie l'image sylchamber/almalinux-toolbox
     vars:
       IMAGE: almalinux-toolbox
-      VARIANT: "9"
+      VARIANT: "10"
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
@@ -140,7 +140,7 @@ tasks:
     desc: Publie l'image sylchamber/almalinux-toolbox-ops
     vars:
       IMAGE: almalinux-toolbox-ops
-      VARIANT: "9"
+      VARIANT: "10"
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
@@ -162,12 +162,13 @@ tasks:
 
   push:*:*:
     desc: Publie l'image spécifiée
+    internal: true
     requires:
       vars:
         - name: IMAGE
           enum: [almalinux-toolbox, almalinux-toolbox-ops, base, ops]
         - name: VARIANT
-          enum: ["9", alpine]
+          enum: ["9", "10", alpine, latest]
     vars:
       IMAGE: "{{index .MATCH 0}}"
       VARIANT: "{{index .MATCH 1}}"

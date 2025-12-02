@@ -1,5 +1,5 @@
 # Image toolbox Iac/DevOps/Platform Engineering
-ARG VARIANT=9
+ARG VARIANT=latest
 
 # étape de téléchargement de binaires
 FROM ghcr.io/sylchamber/almalinux-toolbox:${VARIANT} as download

@@ -1,5 +1,5 @@
 # Toolbox de base Alpine
-ARG VARIANT=9
+ARG VARIANT=latest
 FROM quay.io/toolbx-images/almalinux-toolbox:${VARIANT}
 LABEL org.opencontainers.image.description="Image toolbox AlmaLinux de base"
 LABEL org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
@@ -11,7 +11,6 @@ ARG BROOT_TAG=1.53.0
 ARG BTM_TAG=0.11.4
 ARG DUST_TAG=v1.2.3
 ARG DYSK_TAG=v3.4.0
-ARG GLOW_TAG=v2.1.1
 ARG GOTASK_TAG=v3.45.5
 ARG LSD_TAG=v1.2.0
 ARG MICRO_TAG=2.0.14
@@ -31,17 +30,18 @@ RUN \
     chezmoi \
     fastfetch \
     fd-find \
+    glow \
     gdu \
     git-credential-oauth \
     gh \
     htop \
-    hyperfine \
+    # hyperfine \ absent sous AL10
     jq \
     lsof \
     nano \
     nwipe \
     pinentry pinentry-tty \
-    procs \
+    # procs \ absent sous AL10
     ripgrep \
     vim-enhanced \
     yq && \
@@ -62,7 +62,6 @@ RUN \
     eget Canop/broot --file 'x86_64-unknown-linux-gnu/broot' --tag ${BROOT_TAG} && \
     eget bootandy/dust --asset gnu --tag ${DUST_TAG} && \
     eget Canop/dysk --file 'build/x86_64-unknown-linux-musl/dysk' --tag ${DYSK_TAG} && \
-    eget charmbracelet/glow --asset '^sbom' --tag ${GLOW_TAG} && \
     eget lsd-rs/lsd --asset gnu.tar.gz --tag ${LSD_TAG} && \
     eget zyedidia/micro --asset linux64.tar.gz --asset '^.sha' --tag ${MICRO_TAG} && \
     eget starship/starship --asset gnu.tar.gz --tag ${STARSHIP_TAG} && \
