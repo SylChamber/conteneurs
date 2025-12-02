@@ -4,13 +4,26 @@ ARG VARIANT=9
 # étape de téléchargement de binaires
 FROM ghcr.io/sylchamber/almalinux-toolbox:${VARIANT} as download
 
-ARG KUBECTL_VERSION
-ARG HASHICORP_URL=https://releases.hashicorp.com
 ARG GIT_API=https://api.github.com/repos
-ARG GOTASK_TAG=v3.45.5
+ARG ARGOCD_TAG=v3.2.1
+ARG CONFTEST_TAG=v0.65.0
+ARG ETCD_TAG=v3.6.6
+ARG HASHICORP_URL=https://releases.hashicorp.com
+ARG HELM_DOCS_TAG=v1.14.2
+ARG K9S_TAG=v0.50.16
+ARG KDASH_TAG=v0.6.2
+ARG KOMPOSE_TAG=v1.37.0
+ARG KREW_TAG=v0.4.5
+ARG KUBECOLOR_TAG=v0.5.3
+ARG KUBESEC_TAG=v2.14.2
+ARG KUBECTL_VERSION=v1.32.10
+ARG KUSTOMIZE_TAG=kustomize/v5.8.0
+ARG OPERATOR_SDK_TAG=v1.42.0
 ARG SOPS_TAG=v3.11.0
-ARG TERRAFORM_VERSION
-ARG TOFU_VERSION
+ARG TERRAFORM_VERSION=1.14.0
+ARG TKN_TAG=v0.43.0
+ARG TOFU_VERSION=v1.10.7
+ARG TRIVY_TAG=v0.67.2
 
 # Dossier bind mount utilisé comme cache pour les fichiers téléchargés
 # ainsi, eget ne téléchargera que les binaires plus récents
@@ -24,38 +37,31 @@ WORKDIR /downloads
 # (dispos dans les repos Alpine pour la plupart)
 RUN \
     mkdir -p /downloads/bin /downloads/doc/trivy && \
-    eget argoproj/argo-cd --upgrade-only --to bin/argocd && \
-    eget open-policy-agent/conftest --asset tar.gz --upgrade-only --to bin/ && \
-    eget charmbracelet/glow --asset '^sbom' --to bin/ && \
-    eget go-task/task --asset tar.gz --tag ${GOTASK_TAG} --to bin/ && \
-    eget norwoodj/helm-docs --asset tar.gz --upgrade-only --to bin/ && \
-    eget derailed/k9s --asset '.tar.gz' --asset '^sbom' --upgrade-only --to bin/ && \
-    eget kdash-rs/kdash --asset 'linux.tar.gz' --upgrade-only --to bin/ && \
-    eget kubernetes/kompose --asset tar.gz --to bin/kompose && \
-    eget kubernetes-sigs/krew --file "./krew-linux_amd64" --to bin/kubectl-krew && \
-    eget kubecolor/kubecolor --asset tar.gz --upgrade-only --to bin/ && \
-    eget controlplaneio/kubesec --upgrade-only --to bin/ && \
-    eget kubernetes-sigs/kustomize --upgrade-only --to bin/ && \
-    eget operator-framework/operator-sdk --asset sdk --upgrade-only --to bin/ && \
+    eget argoproj/argo-cd --tag ${ARGOCD_TAG} --to bin/argocd && \
+    eget open-policy-agent/conftest --asset tar.gz --tag ${CONFTEST_TAG} --to bin/ && \
+    eget norwoodj/helm-docs --asset tar.gz --tag ${HELM_DOCS_TAG} --to bin/ && \
+    eget derailed/k9s --asset '.tar.gz' --asset '^sbom' --tag ${K9S_TAG} --to bin/ && \
+    eget kdash-rs/kdash --asset 'linux.tar.gz' --tag ${KDASH_TAG} --to bin/ && \
+    eget kubernetes/kompose --asset tar.gz --tag ${KOMPOSE_TAG} --to bin/kompose && \
+    eget kubernetes-sigs/krew --file "./krew-linux_amd64" --tag ${KREW_TAG} --to bin/kubectl-krew && \
+    eget kubecolor/kubecolor --asset tar.gz --tag ${KUBECOLOR_TAG} --to bin/ && \
+    eget controlplaneio/kubesec --tag ${KUBESEC_TAG} --to bin/ && \
+    eget kubernetes-sigs/kustomize --tag ${KUSTOMIZE_TAG} --to bin/ && \
+    eget operator-framework/operator-sdk --asset sdk --tag ${OPERATOR_SDK_TAG} --to bin/ && \
     eget getsops/sops --asset '^sbom' --tag ${SOPS_TAG} --to bin/ && \
-    eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --upgrade-only --to bin/ && \
-    eget aquasecurity/trivy --asset '64bit.tar.gz' --asset '^pem' --asset '^sig' --file 'contrib/*' --all --to doc/trivy
+    eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --tag ${TRIVY_TAG} --to bin/ && \
+    eget aquasecurity/trivy --asset '64bit.tar.gz' --asset '^pem' --asset '^sig' --tag ${TRIVY_TAG} --file 'contrib/*' --all --to doc/trivy
 
 # téléchargement séparé car eget ne reconnait pas les versions et télécharge systématiquement
 # copie des fichiers dans /tmp/downloads puisque l'image finale n'a pas accès aux bind mounts des stages précédents
 RUN \
-    VERSION_REGEX='s/v(.*)/\1/' && \
-    TAG_KEY='.tag_name' && \
-    KUBECTL_VERSION=${KUBECTL_VERSION:-$(curl -sL https://dl.k8s.io/release/stable.txt)} && \
-    TERRAFORM_VERSION=${TERRAFORM_VERSION:-$(curl -sL ${GIT_API}/hashicorp/terraform/releases/latest | jq -r ${TAG_KEY} | sed -r "${VERSION_REGEX}")} && \
-    TOFU_VERSION=${TOFU_VERSION:-$(curl -sL ${GIT_API}/opentofu/opentofu/releases/latest | jq -r ${TAG_KEY} | sed -r "${VERSION_REGEX}")} &&\
     curl -fL https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -o bin/kubectl && \
     curl -fL ${HASHICORP_URL}/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip && \
-    eget etcd-io/etcd --file 'etcd?tl' --all --upgrade-only --to bin/ && \
+    eget etcd-io/etcd --file 'etcd?tl' --all --tag ${ETCD_TAG} --to bin/ && \
     eget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.18/openshift-client-linux.tar.gz --file oc --to bin/oc418 && \
     eget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.20/openshift-client-linux.tar.gz --file oc --to bin/oc420 && \
     eget opentofu/opentofu --asset tar.gz --asset '^gpg' --asset '^pem' --asset '^sig' --file tofu --tag ${TOFU_VERSION} --upgrade-only --to bin/ && \
-    eget tektoncd/cli --file tkn --upgrade-only --to bin/ && \
+    eget tektoncd/cli --file tkn --tag ${TKN_TAG} --to bin/ && \
     unzip -od bin/ /tmp/terraform.zip terraform && \
     chmod 755 bin/* && \
     cp -R /downloads /tmp/
@@ -67,12 +73,15 @@ LABEL org.opencontainers.image.description="Image de IaC et d'ingénierie de pla
 LABEL org.opencontainers.image.source https://github.com/SylChamber/conteneurs
 LABEL com.github.containers.toolbox="true"
 
-RUN dnf -y install \
+RUN \
+    dnf -y upgrade && \
+    dnf -y install \
     golang \
     helm \
     python3-pip \
     python3-virtualenv \
     pipx && \
+    dnf clean all && \
     mkdir -p /usr/local/share/doc/trivy
 
 COPY --from=download /tmp/downloads/bin/* /usr/local/bin/
