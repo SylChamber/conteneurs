@@ -9,12 +9,16 @@ LABEL com.github.containers.toolbox="true"
 ARG EGET_VERSION=1.3.4
 ARG BROOT_TAG=1.53.0
 ARG BTM_TAG=0.11.4
-ARG DYSK_TAG=3.4.0
+ARG DUST_TAG=v1.2.3
+ARG DYSK_TAG=v3.4.0
+ARG GLOW_TAG=v2.1.1
+ARG GOTASK_TAG=v3.45.5
 ARG LSD_TAG=v1.2.0
 ARG MICRO_TAG=2.0.14
 ARG STARSHIP_TAG=v1.24.1
 ARG TLDR_TAG=v1.8.1
 ARG TOPGRADE_TAG=v16.6.0
+ARG XH_TAG=v0.25.0
 
 RUN \
     dnf -y upgrade && \
@@ -30,12 +34,13 @@ RUN \
     gdu \
     git-credential-oauth \
     gh \
-    pinentry pinentry-tty \
     htop \
     hyperfine \
     jq \
+    lsof \
     nano \
     nwipe \
+    pinentry pinentry-tty \
     procs \
     ripgrep \
     vim-enhanced \
@@ -49,20 +54,22 @@ RUN \
     wget -qO- https://github.com/zyedidia/eget/releases/download/v${EGET_VERSION}/eget-${EGET_VERSION}-linux_amd64.tar.gz | \
     tar xzvf - -C /usr/local/bin/ --strip-components 1 --exclude '*/LICENSE' --exclude '*/README.md' && \
     mkdir -p /usr/local/share/man/man1 && \
-    mv /usr/local/bin/eget.1 /usr/local/share/man/man1/ && \
-    echo '%wheel ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/wheel-nopasswd && \
-    sed -ri 's|^(root:)(.*)/bin/sh|\1\2/usr/bin/fish|' /etc/passwd
+    mv /usr/local/bin/eget.1 /usr/local/share/man/man1/
 
 RUN \
     export EGET_BIN=/usr/local/bin && \
     eget ClementTsang/bottom --asset gnu.tar.gz --file 'btm' --tag ${BTM_TAG} && \
     eget Canop/broot --file 'x86_64-unknown-linux-gnu/broot' --tag ${BROOT_TAG} && \
-    eget Canop/dysk --file 'build/x86_64-unknown-linux-gnu/dysk' --tag ${DYSK_TAG}  && \
+    eget bootandy/dust --asset gnu --tag ${DUST_TAG} && \
+    eget Canop/dysk --file 'build/x86_64-unknown-linux-musl/dysk' --tag ${DYSK_TAG} && \
+    eget charmbracelet/glow --asset '^sbom' --tag ${GLOW_TAG} && \
     eget lsd-rs/lsd --asset gnu.tar.gz --tag ${LSD_TAG} && \
     eget zyedidia/micro --asset linux64.tar.gz --asset '^.sha' --tag ${MICRO_TAG} && \
     eget starship/starship --asset gnu.tar.gz --tag ${STARSHIP_TAG} && \
+    eget go-task/task --asset tar.gz --tag ${GOTASK_TAG} && \
     eget tealdeer-rs/tealdeer --tag ${TLDR_TAG} && \
     ln -s /usr/local/bin/tealdeer /usr/local/bin/tldr && \
-    eget topgrade-rs/topgrade --asset gnu.tar.gz --tag ${TOPGRADE_TAG}
+    eget topgrade-rs/topgrade --asset gnu.tar.gz --tag ${TOPGRADE_TAG} && \
+    eget ducaale/xh --tag ${XH_TAG}
 
 ENTRYPOINT []
