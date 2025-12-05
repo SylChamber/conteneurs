@@ -1,16 +1,14 @@
 # Images de conteneur Linux
 
-Ce dépôt définit des images de conteneur Linux. Seules les images basées sur Alpine sont maintenues.
+Ce dépôt définit des images de conteneur Linux.
 
-## Base
+## almalinux-toolbox
 
-Image de base pour d'autre conteneurs. Ces images ont l'utilisateur par défaut `root`.
+Image de base pour utilisation avec la CLI `toolbox` (_toolbx_). Voir les [détails de l'image almalinux-toolbox](almalinux-toolbox/README.md).
 
-## Ops
+## almalinux-toolbox-ops
 
-Image pour les opérations d'infrastructure (DevOps, ingénierie de plateforme). Elle définit un utilisateur `ops` (modifiable par l'argument `USER`), sous lequel le conteneur s'exécute.
-
-L'utilisateur `ops` détient les privilèges `sudo`.
+Image toolbox pour les opérations d'infrastructure (DevOps, ingénierie de plateforme). Voir les [détails de l'image almalinux-toolbox-ops](almalinux-toolbox-ops/README.md).
 
 ## Authentification aux registres d'images GHCR et Quay
 
@@ -39,3 +37,18 @@ task auth:ghcr
 # authentification à quay.io
 task auth:quay
 ```
+
+## Utilisation de podman
+
+Une toolbox n'est pas un conteneur comme les autres. Avec toolbox, le conteneur est intégré à l'environnement utilisateur. On peut lancer des commandes dans l'OS hôte à l'aide de `flatpak-spawn --host`:
+
+```shell
+flatpak-spawn --host podman ps
+```
+
+## Références
+
+* [toolbx - Documentation](https://containertoolbx.org/doc/)
+* [Toolbx - Fedora Documentation](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/)
+* [1player/host-spawn](https://github.com/1player/host-spawn)
+* [toolbx-images - Community maintained container images to use with toolbx and distrobox](https://github.com/toolbx-images/images)

@@ -1,4 +1,4 @@
-# Toolbox de base Alpine
+# Toolbox de base AlmaLinux
 ARG VARIANT=latest
 FROM quay.io/toolbx-images/almalinux-toolbox:${VARIANT}
 LABEL org.opencontainers.image.description="Image toolbox AlmaLinux de base"

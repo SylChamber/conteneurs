@@ -27,18 +27,3 @@ et pour publier sur `ghcr.io` et `quay.io`, lancer:
 ```shell
 task push:almalinux-toolbox
 ```
-
-## Utilisation de podman
-
-Une toolbox n'est pas un conteneur comme les autres. Avec toolbox, le conteneur est intégré à l'environnement utilisateur. On peut lancer des commandes dans l'OS hôte à l'aide de `flatpak-spawn --host`:
-
-```shell
-flatpak-spawn --host podman ps
-```
-
-## Références
-
-* [toolbx - Documentation](https://containertoolbx.org/doc/)
-* [Toolbx - Fedora Documentation](https://docs.fedoraproject.org/en-US/fedora-silverblue/toolbox/)
-* [1player/host-spawn](https://github.com/1player/host-spawn)
-* [toolbx-images - Community maintained container images to use with toolbx and distrobox](https://github.com/toolbx-images/images)
