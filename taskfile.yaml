@@ -39,90 +39,38 @@ tasks:
     vars:
       IMAGE: almalinux-toolbox
       VARIANT: "10"
-    cmd: |
-      {{.CLI_OCI}} build \
-      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.OWNER}}/{{.IMAGE}}:latest \
-      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest \
-      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
-      {{.IMAGE}}
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
 
   build:almalinux-toolbox-ops:
     desc: Construit et étiquette sylchamber/almalinux-toolbox-ops
     vars:
       IMAGE: almalinux-toolbox-ops
       VARIANT: "10"
-    cmd: |
-      {{.CLI_OCI}} build \
-      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.OWNER}}/{{.IMAGE}}:latest \
-      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest \
-      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
-      {{.IMAGE}}
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
 
-  build:base:
-    desc: Construit et étiquette sylchamber/base
+  build:*:*:
+    internal: true
+    desc: Construit l'image spécifiée
     requires:
       vars:
         - name: IMAGE
-          enum: [base, ops]
+          enum: [almalinux-toolbox, almalinux-toolbox-ops]
         - name: VARIANT
-          enum: [alpine]
+          enum: ["9", "10"]
     vars:
-      IMAGE: base
-      VARIANT: alpine
+      IMAGE: "{{index .MATCH 0}}"
+      VARIANT: "{{index .MATCH 1}}"
     cmd: |
       {{.CLI_OCI}} build \
       -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
       -t {{.OWNER}}/{{.IMAGE}}:latest \
       -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
       -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest \
       -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
       -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
       {{.IMAGE}}
-
-  build:ops:
-    desc: Construit et étiquette l'image sylchamber/ops
-    deps: [build-deps:ops]
-    requires:
-      vars:
-        - name: IMAGE
-          enum: [base, ops]
-        - name: VARIANT
-          enum: [alpine]
-    vars:
-      IMAGE: ops
-      VARIANT: alpine
-      USER: ops
-      DOWNLOADS_PATH:
-        sh: |
-          {{.CLI_OCI}} volume inspect {{.OPS_DOWNLOAD_VOLUME}} --format {{"'{{.Mountpoint}}'"}}
-    cmd: |
-      {{.CLI_OCI}} build \
-      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
-      -t {{.OWNER}}/{{.IMAGE}}:latest \
-      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
-      -t {{.GHCR.REGISTRY}}/{{.GHCR.OWNER}}/{{.IMAGE}}:latest \
-      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}} \
-      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:{{.VARIANT}}-latest \
-      -t {{.QUAY.REGISTRY}}/{{.QUAY.OWNER}}/{{.IMAGE}}:latest \
-      --build-arg USER={{.USER}} \
-      --volume {{.DOWNLOADS_PATH}}:/downloads \
-      {{.IMAGE}}
-
-  build-deps:ops:
-    desc: Contruit les prérequis à build ops
-    cmd: |
-      {{.CLI_OCI}} volume create --ignore {{.OPS_DOWNLOAD_VOLUME}}
 
   push:all:
     desc: Publie toutes les images
@@ -144,31 +92,15 @@ tasks:
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
-  push:base:
-    desc: Publie l'image sylchamber/base
-    vars:
-      IMAGE: base
-      VARIANT: alpine
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:ops:
-    desc: Publie l'image sylchamber/ops
-    vars:
-      IMAGE: ops
-      VARIANT: alpine
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
   push:*:*:
     desc: Publie l'image spécifiée
     internal: true
     requires:
       vars:
         - name: IMAGE
-          enum: [almalinux-toolbox, almalinux-toolbox-ops, base, ops]
+          enum: [almalinux-toolbox, almalinux-toolbox-ops]
         - name: VARIANT
-          enum: ["9", "10", alpine, latest]
+          enum: ["9", "10"]
     vars:
       IMAGE: "{{index .MATCH 0}}"
       VARIANT: "{{index .MATCH 1}}"
