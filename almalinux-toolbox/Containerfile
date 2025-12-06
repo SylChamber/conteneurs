@@ -13,6 +13,7 @@ ARG DUST_TAG=v1.2.3
 ARG DYSK_TAG=v3.4.0
 ARG GOTASK_TAG=v3.45.5
 ARG LSD_TAG=v1.2.0
+ARG MDBOOK_TAG=v0.5.1
 ARG MICRO_TAG=2.0.14
 ARG STARSHIP_TAG=v1.24.1
 ARG TLDR_TAG=v1.8.1
@@ -63,6 +64,7 @@ RUN \
     eget bootandy/dust --asset gnu --tag ${DUST_TAG} && \
     eget Canop/dysk --file 'build/x86_64-unknown-linux-musl/dysk' --tag ${DYSK_TAG} && \
     eget lsd-rs/lsd --asset gnu.tar.gz --tag ${LSD_TAG} && \
+    eget rust-lang/mdBook --asset gnu.tar.gz --tag ${MDBOOK_TAG} && \
     eget zyedidia/micro --asset linux64.tar.gz --asset '^.sha' --tag ${MICRO_TAG} && \
     eget starship/starship --asset gnu.tar.gz --tag ${STARSHIP_TAG} && \
     eget go-task/task --asset tar.gz --tag ${GOTASK_TAG} && \
