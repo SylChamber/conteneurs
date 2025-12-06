@@ -11,6 +11,7 @@ Image de base AlmaLinux contenant le shell `fish`, les `man-pages`, le prompt [S
 * `jq` et `yq`
 * `zip` et `unzip`
 * versions colorées des outils fréquents: `bat` (`cat`), `lsd`, `dust` et `gdu` (`du`), `fd` (`find`), `rg` (ripgrep)
+* `mdBook` du projet Rust Lang, un outil de production documentation à partir de fichiers MarkDown
 
 Elle inclut également une configuration par défaut de `fish` pour les utilisateurs sous `/etc/fish`.
 

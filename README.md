@@ -38,6 +38,16 @@ task auth:ghcr
 task auth:quay
 ```
 
+### Authentification automatique
+
+On peut enregistrer les jetons dans le fichier `~/.config/containers/auth.json` tel qu'indiqué par les exemples de la page man [podman-login](https://docs.podman.io/en/latest/markdown/podman-login.1.html):
+
+```shell
+echo $GITHUB_TOKEN | podman login --authfile ~/.config/containers/auth.json -u <User> --password-stdin ghcr.io
+```
+
+Par la suite, l'authentification sera automatique.
+
 ## Utilisation de podman
 
 Une toolbox n'est pas un conteneur comme les autres. Avec toolbox, le conteneur est intégré à l'environnement utilisateur. On peut lancer des commandes dans l'OS hôte à l'aide de `flatpak-spawn --host`:

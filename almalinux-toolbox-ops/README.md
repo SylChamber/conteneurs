@@ -6,9 +6,24 @@ Cette image est basée sur [l'image toolbox de base AlmaLinux](../almalinux-tool
 * `opentofu`
 * le langage `python` et `pipx`
 * le langage `go`
-* `kubectl`
-* `oc` (versions 4.18 et 4.20)
-* `trivy`
+* `kubectl` et les outils de l'écosystème Kubernetes
+  * `oc` (versions 4.18 et 4.20)
+  * `k9s` et `kdash`
+  * `argocd`
+  * `conftest` (pour OPA)
+  * les CLI `etcd`
+  * `helm` et `helm-docs`
+  * `kompose`
+  * `krew`
+  * `kubecolor`
+  * `kubesec`
+  * `kustomize`
+  * `operator-sdk`
+  * `sops`
+  * `tkn` (CLI Tekton―OpenShift Pipelines)
+  * `trivy`
+
+> TODO: envisager d'inclure la version désirée de Go d'après la technique de l'image [ubi10/go-toolset](https://catalog.redhat.com/en/software/containers/ubi10/go-toolset/677d3db01d4db033edfda594).
 
 ## Construction et publication
 
