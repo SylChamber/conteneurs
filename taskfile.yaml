@@ -11,7 +11,6 @@ vars:
     map:
       REGISTRY: quay.io
       OWNER: sylchambr
-  OPS_DOWNLOAD_VOLUME: ops-build-downloads
 
 set: [pipefail]
 
@@ -32,7 +31,7 @@ tasks:
 
   build:all:
     desc: Construit et étiquette toutes les images
-    deps: [build:base, build:ops]
+    deps: [build:almalinux-toolbox, build:almalinux-toolbox-ops]
 
   build:almalinux-toolbox:
     desc: Construit et étiquette sylchamber/almalinux-toolbox
