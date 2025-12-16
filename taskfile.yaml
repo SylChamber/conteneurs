@@ -33,6 +33,14 @@ tasks:
     desc: Construit et étiquette toutes les images
     deps: [build:almalinux-toolbox, build:almalinux-toolbox-ops]
 
+  build:eget:
+    desc: Construit et étiquette sylchamber/eget
+    vars:
+      IMAGE: eget
+      VARIANT: latest
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+
   build:almalinux-toolbox:
     desc: Construit et étiquette sylchamber/almalinux-toolbox
     vars:
@@ -55,9 +63,7 @@ tasks:
     requires:
       vars:
         - name: IMAGE
-          enum: [almalinux-toolbox, almalinux-toolbox-ops]
         - name: VARIANT
-          enum: ["9", "10"]
     vars:
       IMAGE: "{{index .MATCH 0}}"
       VARIANT: "{{index .MATCH 1}}"
@@ -74,6 +80,14 @@ tasks:
   push:all:
     desc: Publie toutes les images
     deps: [push:almalinux-toolbox, push:almalinux-toolbox-ops]
+
+  push:eget:
+    desc: Publie l'image sylchamber/eget
+    vars:
+      IMAGE: eget
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   push:almalinux-toolbox:
     desc: Publie l'image sylchamber/almalinux-toolbox
@@ -97,9 +111,7 @@ tasks:
     requires:
       vars:
         - name: IMAGE
-          enum: [almalinux-toolbox, almalinux-toolbox-ops]
         - name: VARIANT
-          enum: ["9", "10"]
     vars:
       IMAGE: "{{index .MATCH 0}}"
       VARIANT: "{{index .MATCH 1}}"

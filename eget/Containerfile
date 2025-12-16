@@ -1,0 +1,21 @@
+ARG VARIANT=latest
+FROM docker.io/library/alpine:${VARIANT}
+LABEL \
+    org.opencontainers.image.description="Image eget pour téléchargement d'outils absents des dépôts" \
+    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs \
+    org.opencontainers.image.base.name=docker.io/library/alpine:${VARIANT}
+
+ARG EGET_VERSION=1.3.4
+
+RUN \
+    apk update && apk upgrade && \
+    apk add --no-cache curl unzip
+
+RUN \
+    mkdir -p /usr/local/bin /usr/local/share/man/man1 && \
+    curl -sLo - https://github.com/zyedidia/eget/releases/download/v${EGET_VERSION}/eget-${EGET_VERSION}-linux_amd64.tar.gz | \
+    tar xzvf - -C /usr/local/bin/ --strip-components 1 --exclude '*/LICENSE' --exclude '*/README.md' && \
+    chown root:root /usr/local/bin/eget* && \
+    chmod 755 /usr/local/bin/eget && \
+    chmod 644 /usr/local/bin/eget.1 && \
+    mv /usr/local/bin/eget.1 /usr/local/share/man/man1/
