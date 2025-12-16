@@ -1,0 +1,33 @@
+ARG VARIANT=latest
+FROM ghcr.io/sylchamber/eget:${VARIANT}
+LABEL \
+    name="sylchamber/eget" \
+    org.opencontainers.image.description="Outils shell communs absents des dépôts alpine" \
+    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs \
+    org.opencontainers.image.base.name=ghcr.io/sylchamber/eget:${VARIANT}
+
+ARG TOOLS_PATH=/tools
+
+ARG FRESH_TAG=v0.1.44
+ARG GLOW_TAG=v2.1.1
+ARG TLDR_TAG=v1.8.1
+ARG TQ_TAG=0.2.2
+
+# Dossier bind mount utilisé comme cache pour les fichiers téléchargés
+# ainsi, eget ne téléchargera que les binaires plus récents
+# si désiré, lancer 'podman build' avec un volume nommé:
+#   -v $(podman volume create --ignore tools-shell-downloads && \
+#       podman volume inspect tools-shell-downloads --format '{{.Mountpoint}}'):/tools
+VOLUME ${TOOLS_PATH}
+
+RUN \
+    mkdir -p ${TOOLS_PATH}/bin ${TOOLS_PATH}/doc ${TOOLS_PATH}/man/man1 ${TOOLS_PATH}/rpm && \
+    cp /usr/local/bin/eget ${TOOLS_PATH}/bin/ && \
+    cp /usr/local/share/man/man1/eget.1 ${TOOLS_PATH}/man/man1/
+
+RUN \
+    export EGET_BIN=${TOOLS_PATH}/bin && \
+    eget sinelaw/fresh --asset 'x86_64.rpm' --download-only --tag ${FRESH_TAG} --to ${TOOLS_PATH}/rpm && \
+    eget charmbracelet/glow --asset '^sbom' --tag ${GLOW_TAG} && \
+    eget tealdeer-rs/tealdeer --tag ${TLDR_TAG} --to ${TOOLS_PATH}/bin/tldr && \
+    eget cryptaliagy/tomlq --asset amd64 --tag ${TQ_TAG}

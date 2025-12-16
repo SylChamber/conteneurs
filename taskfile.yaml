@@ -41,6 +41,14 @@ tasks:
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
 
+  build:tools-shell:
+    desc: Construit et étiquette sylchamber/tools-shell
+    vars:
+      IMAGE: tools-shell
+      VARIANT: latest
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+
   build:almalinux-toolbox:
     desc: Construit et étiquette sylchamber/almalinux-toolbox
     vars:
@@ -85,6 +93,14 @@ tasks:
     desc: Publie l'image sylchamber/eget
     vars:
       IMAGE: eget
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  push:tools-shell:
+    desc: Publie l'image sylchamber/tools-shell
+    vars:
+      IMAGE: tools-shell
       VARIANT: latest
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
