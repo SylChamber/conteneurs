@@ -44,6 +44,7 @@ RUN apk update && apk upgrade && \
     git git-doc git-credential-oauth git-credential-oauth-doc \
     github-cli github-cli-doc \
     gnupg gpg gpg-agent \
+    go-task go-task-doc \
     htop htop-doc \
     hyperfine hyperfine-doc \
     iproute2 iproute2-doc \
@@ -56,6 +57,8 @@ RUN apk update && apk upgrade && \
     lsof lsof-doc \
     man-pages \
     mandoc \
+    micro micro-doc \
+    mdbook mdbook-mermaid \
     musl-locales \
     musl-utils \
     nano nano-doc \
