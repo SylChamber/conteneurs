@@ -1,0 +1,94 @@
+ARG VARIANT=latest
+FROM docker.io/library/alpine:${VARIANT}
+
+# source: https://github.com/toolbx-images/images/tree/main/alpine
+LABEL com.github.containers.toolbox="true" \
+    name="alpine-toolbox" \
+    version="3.23" \
+    usage="This image is meant to be used with the toolbox command" \
+    summary="Base image for creating Alpine Linux toolbox containers" \
+    org.opencontainers.image.base.name=ghcr.io/sylchamber/alpine-toolbox:${VARIANT} \
+    org.opencontainers.image.description="Image toolbox de base" \
+    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
+
+# Install extra packages
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+    alpine-base \
+    bash bash-doc \
+    fish fish-doc \
+    age age-doc \
+    apk-tools-doc \
+    acl acl-doc \
+    bat bat-doc \
+    bc \
+    bind-tools bind-doc \
+    bottom bottom-doc \
+    broot broot-doc \
+    btop btop-doc \
+    bzip2 bzip2-doc \
+    ca-certificates ca-certificates-doc \
+    chezmoi \
+    containers-common-doc \
+    uutils-coreutils uutils-coreutils-doc \
+    curl curl-doc \
+    diffutils diffutils-doc \
+    dust dust-doc \
+    docs \
+    dysk \
+    fastfetch fastfetch-doc \
+    fd fd-doc \
+    findutils findutils-doc \
+    gcompat \
+    gdu gdu-doc \
+    git git-doc git-credential-oauth git-credential-oauth-doc \
+    github-cli github-cli-doc \
+    gnupg gpg gpg-agent \
+    htop htop-doc \
+    hyperfine hyperfine-doc \
+    iproute2 iproute2-doc \
+    iputils \
+    jq jq-doc \
+    keyutils \
+    less \
+    libcap \
+    lsd \
+    lsof lsof-doc \
+    man-pages \
+    mandoc \
+    musl-locales \
+    musl-utils \
+    nano nano-doc \
+    ncurses-terminfo \
+    net-tools \
+    openssh-client openssh-client-common \
+    openssh-keygen \
+    pinentry-curses-ss pinentry-doc \
+    podman-doc \
+    podman-remote \
+    procps procs-doc \
+    ripgrep ripgrep-doc \
+    rsync rsync-doc \
+    sed-doc \
+    shadow \
+    starship \
+    sudo sudo-doc \
+    tar tar-doc \
+    tcpdump tcpdump-doc \
+    topgrade topgrade-doc \
+    tree tree-doc \
+    unzip unzip-doc \
+    util-linux util-linux-doc \
+    vim vim-doc \
+    wget wget-doc \
+    which \
+    wipe wipe-doc \
+    xh xh-doc \
+    xz xz-doc \
+    zip zip-doc
+
+# Enable password less sudo
+RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/toolbox
+
+# Clear out /media
+RUN rm -rf /media
