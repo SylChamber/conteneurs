@@ -1,6 +1,8 @@
 ARG VARIANT=latest
-FROM docker.io/library/alpine:${VARIANT}
 
+FROM ghcr.io/sylchamber/tools-shell:${VARIANT} as tools
+
+FROM docker.io/library/alpine:${VARIANT}
 # source: https://github.com/toolbx-images/images/tree/main/alpine
 LABEL com.github.containers.toolbox="true" \
     name="alpine-toolbox" \
@@ -10,6 +12,8 @@ LABEL com.github.containers.toolbox="true" \
     org.opencontainers.image.base.name=ghcr.io/sylchamber/alpine-toolbox:${VARIANT} \
     org.opencontainers.image.description="Image toolbox de base" \
     org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
+
+ARG TOOLS_PATH=/tools
 
 # Install extra packages
 RUN apk update && apk upgrade && \
@@ -88,10 +92,16 @@ RUN apk update && apk upgrade && \
     wipe wipe-doc \
     xh xh-doc \
     xz xz-doc \
-    zip zip-doc
+    zip zip-doc && \
+    mkdir -p /usr/local/bin /usr/local/share/man/man1 /usr/local/share/doc
 
-# Enable password less sudo
-RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/toolbox
+COPY --chmod=644 ["config/fish/conf.d/*", "/etc/fish/conf.d/"]
+COPY --chmod=644 ["config/fish/functions/*", "/etc/fish/functions/"]
 
-# Clear out /media
-RUN rm -rf /media
+COPY --from=tools ${TOOLS_PATH}/bin/* /usr/local/bin/
+COPY --from=tools ${TOOLS_PATH}/man/man1/* /usr/local/share/man/man1/
+
+# Enable password less sudo; Clear out /media
+RUN \
+    echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/wheel-nopasswd && \
+    rm -rf /media
