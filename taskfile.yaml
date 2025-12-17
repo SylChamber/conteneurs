@@ -49,6 +49,14 @@ tasks:
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
 
+  build:alpine-tools-ops:
+    desc: Construit et étiquette sylchamber/alpine-tools-ops
+    vars:
+      IMAGE: alpine-tools-ops
+      VARIANT: latest
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+
   build:alpine-toolbox:
     desc: Construit et étiquette sylchamber/alpine-toolbox
     vars:
@@ -109,6 +117,14 @@ tasks:
     desc: Publie l'image sylchamber/alpine-tools-shell
     vars:
       IMAGE: alpine-tools-shell
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  push:alpine-tools-ops:
+    desc: Publie l'image sylchamber/alpine-tools-ops
+    vars:
+      IMAGE: alpine-tools-ops
       VARIANT: latest
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}

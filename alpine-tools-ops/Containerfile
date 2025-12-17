@@ -1,0 +1,76 @@
+ARG VARIANT=latest
+FROM ghcr.io/sylchamber/eget:${VARIANT}
+LABEL \
+    org.opencontainers.image.description="Outils shell IaC et d'ingénierie de plateforme absents des dépôts ubi" \
+    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs \
+    org.opencontainers.image.base.name=ghcr.io/sylchamber/eget:${VARIANT}
+
+ARG TOOLS_PATH=/tools
+
+# oc est exclus car il est lié dynamiquement à glib et ne fonctionne pas avec musl
+# voir https://github.com/openshift/origin/issues/11135
+ARG GIT_API=https://api.github.com/repos
+ARG ARGOCD_TAG=v3.2.1
+ARG CONFTEST_TAG=v0.65.0
+ARG ETCD_TAG=v3.6.6
+ARG GRYPE_TAG=v0.104.2
+ARG HASHICORP_URL=https://releases.hashicorp.com
+ARG HELM_DOCS_TAG=v1.14.2
+ARG HELM_TAG=v4.0.4
+ARG K9S_TAG=v0.50.16
+ARG KDASH_TAG=v0.6.2
+ARG KOMPOSE_TAG=v1.37.0
+ARG KREW_TAG=v0.4.5
+ARG KUBECOLOR_TAG=v0.5.3
+ARG KUBESEC_TAG=v2.14.2
+ARG KUBECTL_VERSION=v1.32.10
+ARG KUSTOMIZE_TAG=kustomize/v5.8.0
+ARG OPERATOR_SDK_TAG=v1.42.0
+ARG SOPS_TAG=v3.11.0
+ARG SYFT_TAG=v1.38.2
+# ARG TERRAFORM_VERSION=1.14.0
+ARG TKN_TAG=v0.43.0
+ARG TOFU_VERSION=v1.10.7
+ARG TRIVY_TAG=v0.67.2
+
+# Dossier bind mount utilisé comme cache pour les fichiers téléchargés
+# ainsi, eget ne téléchargera que les binaires plus récents
+# si désiré, lancer 'podman build' avec un volume nommé:
+#   -v $(podman volume create --ignore tools-shell-downloads && \
+#       podman volume inspect tools-shell-downloads --format '{{.Mountpoint}}'):/tools
+VOLUME ${TOOLS_PATH}
+WORKDIR ${TOOLS_PATH}
+
+RUN \
+    mkdir -p ${TOOLS_PATH}/bin ${TOOLS_PATH}/doc ${TOOLS_PATH}/man/man1 ${TOOLS_PATH}/apk
+
+# téléchargement d'outils reconnus via GitHub Releases
+# (dispos dans les repos Alpine pour la plupart)
+RUN \
+    eget argoproj/argo-cd --tag ${ARGOCD_TAG} --to bin/argocd && \
+    eget open-policy-agent/conftest --asset tar.gz --tag ${CONFTEST_TAG} --to bin/ && \
+    eget anchore/grype --asset tar.gz --tag ${GRYPE_TAG} --to bin/ && \
+    eget norwoodj/helm-docs --asset tar.gz --tag ${HELM_DOCS_TAG} --to bin/ && \
+    eget derailed/k9s --asset '.tar.gz' --asset '^sbom' --tag ${K9S_TAG} --to bin/ && \
+    eget kdash-rs/kdash --asset 'musl' --tag ${KDASH_TAG} --to bin/ && \
+    eget kubernetes/kompose --asset tar.gz --tag ${KOMPOSE_TAG} --to bin/kompose && \
+    eget kubernetes-sigs/krew --file "./krew-linux_amd64" --tag ${KREW_TAG} --to bin/kubectl-krew && \
+    eget kubecolor/kubecolor --asset tar.gz --tag ${KUBECOLOR_TAG} --to bin/ && \
+    eget controlplaneio/kubesec --tag ${KUBESEC_TAG} --to bin/ && \
+    eget kubernetes-sigs/kustomize --tag ${KUSTOMIZE_TAG} --to bin/ && \
+    eget operator-framework/operator-sdk --asset sdk --tag ${OPERATOR_SDK_TAG} --to bin/ && \
+    eget getsops/sops --asset '^sbom' --tag ${SOPS_TAG} --to bin/ && \
+    eget anchore/syft --asset tar.gz --tag ${SYFT_TAG} --to bin/ && \
+    eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --tag ${TRIVY_TAG} --to bin/ && \
+    eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --tag ${TRIVY_TAG} --file 'contrib/*' --all --to doc/trivy
+
+# téléchargement séparé car eget ne reconnait pas les versions et télécharge systématiquement
+RUN \
+    curl -fL https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -o bin/kubectl && \
+    # curl -fL ${HASHICORP_URL}/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip && \
+    eget etcd-io/etcd --file 'etcd?tl' --all --tag ${ETCD_TAG} --to bin/ && \
+    eget https://get.helm.sh/helm-${HELM_TAG}-linux-amd64.tar.gz --file helm --to bin/ && \
+    eget opentofu/opentofu --asset tar.gz --asset '^gpg' --asset '^pem' --asset '^sig' --file tofu --tag ${TOFU_VERSION} --upgrade-only --to bin/ && \
+    eget tektoncd/cli --file tkn --tag ${TKN_TAG} --to bin/ && \
+    # unzip -od bin/ /tmp/terraform.zip terraform && \
+    chmod 755 bin/*
