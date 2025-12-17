@@ -1,6 +1,6 @@
 ARG VARIANT=latest
 
-FROM ghcr.io/sylchamber/tools-shell:${VARIANT} as tools
+FROM ghcr.io/sylchamber/alpine-tools-shell:${VARIANT} as tools
 
 FROM docker.io/library/alpine:${VARIANT}
 # source: https://github.com/toolbx-images/images/tree/main/alpine
