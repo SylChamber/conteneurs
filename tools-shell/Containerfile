@@ -8,7 +8,6 @@ LABEL \
 
 ARG TOOLS_PATH=/tools
 
-ARG FRESH_TAG=v0.1.44
 ARG GLOW_TAG=v2.1.1
 ARG TLDR_TAG=v1.8.1
 ARG TQ_TAG=0.2.2
@@ -21,13 +20,12 @@ ARG TQ_TAG=0.2.2
 VOLUME ${TOOLS_PATH}
 
 RUN \
-    mkdir -p ${TOOLS_PATH}/bin ${TOOLS_PATH}/doc ${TOOLS_PATH}/man/man1 ${TOOLS_PATH}/rpm && \
+    mkdir -p ${TOOLS_PATH}/bin ${TOOLS_PATH}/doc ${TOOLS_PATH}/man/man1 ${TOOLS_PATH}/apk && \
     cp /usr/local/bin/eget ${TOOLS_PATH}/bin/ && \
     cp /usr/local/share/man/man1/eget.1 ${TOOLS_PATH}/man/man1/
 
 RUN \
     export EGET_BIN=${TOOLS_PATH}/bin && \
-    eget sinelaw/fresh --asset 'x86_64.rpm' --download-only --tag ${FRESH_TAG} --to ${TOOLS_PATH}/rpm && \
     eget charmbracelet/glow --asset '^sbom' --tag ${GLOW_TAG} && \
     eget tealdeer-rs/tealdeer --tag ${TLDR_TAG} --to ${TOOLS_PATH}/bin/tldr && \
     eget cryptaliagy/tomlq --asset amd64 --tag ${TQ_TAG}
