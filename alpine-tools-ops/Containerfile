@@ -26,7 +26,6 @@ ARG KUBESEC_TAG=v2.14.2
 ARG KUBECTL_VERSION=v1.32.10
 ARG KUSTOMIZE_TAG=kustomize/v5.8.0
 ARG OPERATOR_SDK_TAG=v1.42.0
-ARG SOPS_TAG=v3.11.0
 ARG SYFT_TAG=v1.38.2
 # ARG TERRAFORM_VERSION=1.14.0
 ARG TKN_TAG=v0.43.0
@@ -59,7 +58,6 @@ RUN \
     eget controlplaneio/kubesec --tag ${KUBESEC_TAG} --to bin/ && \
     eget kubernetes-sigs/kustomize --tag ${KUSTOMIZE_TAG} --to bin/ && \
     eget operator-framework/operator-sdk --asset sdk --tag ${OPERATOR_SDK_TAG} --to bin/ && \
-    eget getsops/sops --asset '^sbom' --tag ${SOPS_TAG} --to bin/ && \
     eget anchore/syft --asset tar.gz --tag ${SYFT_TAG} --to bin/ && \
     eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --tag ${TRIVY_TAG} --to bin/ && \
     eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --tag ${TRIVY_TAG} --file 'contrib/*' --all --to doc/trivy

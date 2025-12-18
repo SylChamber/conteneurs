@@ -1,0 +1,33 @@
+ARG VARIANT=latest
+
+FROM ghcr.io/sylchamber/alpine-tools-ops:${VARIANT} as tools
+
+FROM ghcr.io/sylchamber/alpine-toolbox:${VARIANT}
+LABEL com.github.containers.toolbox="true" \
+    name="alpine-toolbox-ops" \
+    version="3.23" \
+    usage="This image is meant to be used with the toolbox command" \
+    summary="Image toolbox Alpine de IaC et d'ingénierie de plateforme" \
+    org.opencontainers.image.base.name=ghcr.io/sylchamber/alpine-toolbox:${VARIANT} \
+    org.opencontainers.image.description="Image toolbox Alpine de IaC et d'ingénierie de plateforme" \
+    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
+
+ARG TOOLS_PATH=/tools
+
+RUN \
+    apk update && apk upgrade && \
+    apk add --no-cache \
+    go go-doc \
+    podman-doc podman-fish-completion \
+    python3 python3-doc \
+    py3-pip py3-pip-doc \
+    py3-virtualenv \
+    pipx \
+    sops && \
+    mkdir -p /usr/local/doc/trivy
+
+COPY --chmod=644 ["config/fish/conf.d/*", "/etc/fish/conf.d/"]
+COPY --chmod=644 ["config/fish/functions/*", "/etc/fish/functions/"]
+
+COPY --from=tools ${TOOLS_PATH}/bin/* /usr/local/bin/
+COPY --from=tools ${TOOLS_PATH}/doc/trivy/* /usr/local/share/doc/trivy/

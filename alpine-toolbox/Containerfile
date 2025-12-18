@@ -9,7 +9,7 @@ LABEL com.github.containers.toolbox="true" \
     version="3.23" \
     usage="This image is meant to be used with the toolbox command" \
     summary="Base image for creating Alpine Linux toolbox containers" \
-    org.opencontainers.image.base.name=ghcr.io/sylchamber/alpine-toolbox:${VARIANT} \
+    org.opencontainers.image.base.name=docker.io/library/alpine:${VARIANT} \
     org.opencontainers.image.description="Image toolbox de base" \
     org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
 
