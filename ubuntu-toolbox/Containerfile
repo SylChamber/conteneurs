@@ -84,6 +84,7 @@ RUN apt-get update && \
     wipe \
     xh \
     zip && \
+    apt-get -y clean && \
     mkdir -p /usr/local/bin /usr/local/share/man/man1 /usr/local/share/doc && \
     rm -rd /var/lib/apt/lists/*
 
