@@ -1,0 +1,23 @@
+# /root/.eget.toml
+# s'assurer de 'umask 022'
+# lancer les mises à jour avec 'sudo eget -D'
+[global]
+target = "/usr/local/bin"
+upgrade_only = true
+
+["zyedidia/eget"]
+
+["go-task/task"]
+asset_filters = ["tar.gz"]
+
+["topgrade-rs/topgrade"]
+asset_filters = ["gnu"]
+
+["cryptaliagy/tomlq"]
+asset_filters = ["amd64"]
+
+["mikefarah/yq"]
+# pour la man page: eget mikefarah/yq --file yq.1 --to /usr/local/man/man1
+asset_filters = ["tar.gz"]
+file = "yq_linux_amd64"
+target = "/usr/local/bin/yq"

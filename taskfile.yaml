@@ -90,10 +90,18 @@ tasks:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
 
   build:tools-shell:
-    desc: Construit et étiquette sylchamber/eget
+    desc: Construit et étiquette sylchamber/tools-shell
     vars:
       IMAGE: tools-shell
       VARIANT: latest
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+
+  build:ubuntu-toolbox:
+    desc: Construit et étiquette sylchamber/ubuntu-toolbox
+    vars:
+      IMAGE: ubuntu-toolbox
+      VARIANT: rolling
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
 
@@ -154,7 +162,7 @@ tasks:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   push:alpine-toolbox-ops:
-    desc: Publie l'image sylchamber/alpine-toolbox
+    desc: Publie l'image sylchamber/alpine-toolbox-ops
     vars:
       IMAGE: alpine-toolbox-ops
       VARIANT: latest
@@ -178,10 +186,18 @@ tasks:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   push:tools-shell:
-    desc: Publie l'image sylchamber/eget
+    desc: Publie l'image sylchamber/tools-shell
     vars:
       IMAGE: tools-shell
       VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  push:ubuntu-toolbox:
+    desc: Publie l'image sylchamber/ubuntu-toolbox
+    vars:
+      IMAGE: ubuntu-toolbox
+      VARIANT: rolling
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 

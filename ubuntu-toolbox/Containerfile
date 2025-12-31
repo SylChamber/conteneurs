@@ -1,0 +1,116 @@
+ARG VARIANT=rolling
+
+# Outils non présents dans les dépôts 25.10
+FROM ghcr.io/sylchamber/tools-shell:latest as tools
+
+# source: https://github.com/containers/toolbox/tree/main/images/ubuntu/
+FROM docker.io/library/ubuntu:${VARIANT}
+
+LABEL com.github.containers.toolbox="true" \
+    name="ubuntu-toolbox" \
+    version="25.10" \
+    usage="This image is meant to be used with the toolbox command" \
+    summary="Base image for creating Ubuntu Toolbx containers" \
+    org.opencontainers.image.base.name=docker.io/library/ubuntu:${VARIANT} \
+    org.opencontainers.image.description="Image toolbox de base" \
+    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
+
+ARG TOOLS_PATH=/usr/local/bin
+ARG TOOLS_MAN_PATH=/usr/local/share/man/man1
+
+# Remove apt configuration optimized for containers
+# Remove docker-gzip-indexes to help with "command-not-found"
+RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-languages
+
+# Restore documentation but do not upgrade all packages
+# Install ubuntu-minimal & ubuntu-standard
+# Install extra packages as well as libnss-myhostname
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install unminimize && \
+    sed -Ei '/apt-get (update|upgrade)/s/^/#/' /usr/bin/unminimize && \
+    yes | /usr/bin/unminimize && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    ubuntu-minimal ubuntu-standard \
+    libnss-myhostname \
+    flatpak-xdg-utils \
+    fish \
+    zsh \
+    acl \
+    age \
+    bat \
+    bc \
+    bind9-dnsutils \
+    bind9-utils \
+    broot \
+    btm \
+    btop \
+    buildah \
+    curl  \
+    diffutils diffutils-doc \
+    du-dust \
+    dysk \
+    fd-find \
+    gdu \
+    git git-credential-oauth \
+    git-hub \
+    glow \
+    gnupg gnupg-agent \
+    htop \
+    hyperfine \
+    iproute2 iputils-ping iputils-tracepath \
+    jq \
+    lsd \
+    lsof \
+    keyutils \
+    mdbook \
+    micro \
+    nano \
+    openssh-client \
+    p11-kit-modules \
+    pinentry-curses pinentry-doc \
+    podman podman-compose podman-remote \
+    procs \
+    ripgrep \
+    rsync \
+    skopeo \
+    starship \
+    tcpdump \
+    tealdeer \
+    tree \
+    unzip \
+    util-linux \
+    vim \
+    wget \
+    wipe \
+    xh \
+    zip && \
+    mkdir -p /usr/local/bin /usr/local/share/man/man1 /usr/local/share/doc && \
+    rm -rd /var/lib/apt/lists/*
+
+# Enable the use of p11-kit-client.so to access CA certificates from the host
+RUN mkdir --parents /etc/pkcs11/modules
+
+# Fix empty bind-mount to clear selinuxfs (see #337)
+RUN mkdir /usr/share/empty
+
+# Add flatpak-spawn to /usr/bin
+RUN ln -s /usr/libexec/flatpak-xdg-utils/flatpak-spawn /usr/bin/
+
+# Having anything in /home prevents toolbox from symlinking /var/home there,
+# and 'ubuntu' user with UID 1000 will most likely conflict with host user as well
+RUN userdel --remove ubuntu
+
+# Disable APT ESM hook which tries to enable some systemd services on each apt invocation
+RUN rm /etc/apt/apt.conf.d/20apt-esm-hook.conf
+
+COPY --chmod=644 ["config/fish/conf.d/*", "/etc/fish/conf.d/"]
+COPY --chmod=644 ["config/fish/functions/*", "/etc/fish/functions/"]
+COPY ["config/.eget.toml", "/root/"]
+
+COPY --from=tools ${TOOLS_PATH}/* /usr/local/bin/
+COPY --from=tools ${TOOLS_MAN_PATH} /usr/local/share/man/man1/
+COPY --from=tools /usr/local/share/*.deb /tmp
+
+RUN \
+    for d in /tmp/*.deb ; do dpkg -i $d ; done && \
+    rm /tmp/*.deb
