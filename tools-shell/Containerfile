@@ -51,3 +51,4 @@ COPY --from=topgrade ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=tq ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=yq ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=yq ${MAN_PATH}/man1/* ${MAN_PATH}/man1/
+COPY --from=fresh /usr/local/share/*.deb /usr/local/share/
