@@ -89,6 +89,14 @@ tasks:
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
 
+  build:tools-shell:
+    desc: Construit et étiquette sylchamber/eget
+    vars:
+      IMAGE: tools-shell
+      VARIANT: latest
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+
   build:*:*:
     internal: true
     desc: Construit l'image spécifiée
@@ -166,6 +174,14 @@ tasks:
     vars:
       IMAGE: almalinux-toolbox-ops
       VARIANT: "10"
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  push:tools-shell:
+    desc: Publie l'image sylchamber/eget
+    vars:
+      IMAGE: tools-shell
+      VARIANT: latest
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}
 
