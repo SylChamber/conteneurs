@@ -97,6 +97,14 @@ tasks:
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
 
+  build:tools-ops:
+    desc: Construit et étiquette sylchamber/tools-ops
+    vars:
+      IMAGE: tools-ops
+      VARIANT: latest
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+
   build:ubuntu-toolbox:
     desc: Construit et étiquette sylchamber/ubuntu-toolbox
     vars:
@@ -189,6 +197,14 @@ tasks:
     desc: Publie l'image sylchamber/tools-shell
     vars:
       IMAGE: tools-shell
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  push:tools-ops:
+    desc: Publie l'image sylchamber/tools-ops
+    vars:
+      IMAGE: tools-ops
       VARIANT: latest
     cmds:
       - task: push:{{.IMAGE}}:{{.VARIANT}}

@@ -1,0 +1,157 @@
+ARG VARIANT=latest
+
+ARG BIN_PATH=/usr/local/bin
+ARG MAN_PATH=/usr/local/share/man
+
+ARG ARGOCD_TAG=v3.2.3
+ARG CONFTEST_TAG=v0.66.0
+ARG ETCD_TAG=v3.6.6
+ARG GRYPE_TAG=v0.104.3
+ARG HELM_DOCS_TAG=v1.14.2
+ARG K9S_TAG=v0.50.16
+ARG KDASH_TAG=v0.6.2
+ARG KOMPOSE_TAG=v1.37.0
+ARG KREW_TAG=v0.4.5
+ARG KUBECOLOR_TAG=v0.5.3
+ARG KUBESEC_TAG=v2.14.2
+ARG KUSTOMIZE_TAG=kustomize/v5.8.0
+ARG LYCHEE_TAG=lychee-v0.22.0
+ARG OPERATOR_SDK_TAG=v1.42.0
+ARG STEP_TAG=v0.29.0
+ARG SOPS_TAG=v3.11.0
+ARG SYFT_TAG=v1.39.0
+ARG TKN_TAG=v0.43.0
+ARG TOFU_TAG=v1.11.2
+ARG TRIVY_TAG=v0.68.2
+
+FROM ghcr.io/sylchamber/eget:${VARIANT} as base
+
+FROM base as argocd
+ARG BIN_PATH
+ARG ARGOCD_TAG
+RUN eget argoproj/argo-cd --tag ${ARGOCD_TAG} --to ${BIN_PATH}/argocd
+
+FROM base as conftest
+ARG BIN_PATH
+ARG CONFTEST_TAG
+RUN eget open-policy-agent/conftest --asset tar.gz --tag ${CONFTEST_TAG} --to ${BIN_PATH}
+
+FROM base as etcd
+ARG BIN_PATH
+ARG ETCD_TAG
+RUN eget etcd-io/etcd --file 'etcd?tl' --tag ${ETCD_TAG} --download-all --to ${BIN_PATH}
+
+FROM base as grype
+ARG BIN_PATH
+ARG GRYPE_TAG
+RUN eget anchore/grype --asset tar.gz --tag ${GRYPE_TAG} --to ${BIN_PATH}
+
+FROM base as helm-docs
+ARG BIN_PATH
+ARG HELM_DOCS_TAG
+RUN eget norwoodj/helm-docs --asset tar.gz --tag ${HELM_DOCS_TAG} --to ${BIN_PATH}
+
+FROM base as k9s
+ARG BIN_PATH
+ARG K9S_TAG
+RUN eget derailed/k9s --asset tar.gz --asset '^sbom' --tag ${K9S_TAG} --to ${BIN_PATH}
+
+FROM base as kdash
+ARG BIN_PATH
+ARG KDASH_TAG
+RUN eget kdash-rs/kdash --asset linux.tar.gz --tag ${KDASH_TAG} --to ${BIN_PATH}
+
+FROM base as kompose
+ARG BIN_PATH
+ARG KOMPOSE_TAG
+RUN eget kubernetes/kompose --asset tar.gz --tag ${KOMPOSE_TAG} --to ${BIN_PATH}/kompose
+
+FROM base as krew
+ARG BIN_PATH
+ARG KREW_TAG
+RUN eget kubernetes-sigs/krew --file './krew-linux_amd64' --tag ${KREW_TAG} --to ${BIN_PATH}/kubectl-krew
+
+FROM base as kubecolor
+ARG BIN_PATH
+ARG KUBECOLOR_TAG
+RUN eget kubecolor/kubecolor --asset tar.gz --tag ${KUBECOLOR_TAG} --to ${BIN_PATH}
+
+FROM base as kubesec
+ARG BIN_PATH
+ARG KUBESEC_TAG
+RUN eget controlplaneio/kubesec --tag ${KUBESEC_TAG} --to ${BIN_PATH}
+
+FROM base as kustomize
+ARG BIN_PATH
+ARG KUSTOMIZE_TAG
+RUN eget kubernetes-sigs/kustomize --tag ${KUSTOMIZE_TAG} --to ${BIN_PATH}
+
+FROM base as lychee
+ARG BIN_PATH
+ARG LYCHEE_TAG
+RUN eget lycheeverse/lychee --asset gnu --tag ${LYCHEE_TAG} --to ${BIN_PATH}
+
+FROM base as operator-sdk
+ARG BIN_PATH
+ARG OPERATOR_SDK_TAG
+RUN eget operator-framework/operator-sdk --asset sdk --tag ${OPERATOR_SDK_TAG} --to ${BIN_PATH}
+
+FROM base as step
+ARG BIN_PATH
+ARG STEP_TAG
+RUN eget smallstep/cli --asset linux_amd64 --asset '^pem' --asset '^sig' --file '*/bin/step' --tag ${STEP_TAG} --to ${BIN_PATH}
+
+FROM base as sops
+ARG BIN_PATH
+ARG SOPS_TAG
+RUN eget getsops/sops --asset '^sbom' --tag ${SOPS_TAG} --to ${BIN_PATH}
+
+FROM base as syft
+ARG BIN_PATH
+ARG SYFT_TAG
+RUN eget anchore/syft --asset tar.gz --tag ${SYFT_TAG} --to ${BIN_PATH}
+
+FROM base as tkn
+ARG BIN_PATH
+ARG TKN_TAG
+RUN eget tektoncd/cli --file tkn --tag ${TKN_TAG} --to ${BIN_PATH}
+
+FROM base as tofu
+ARG BIN_PATH
+ARG TOFU_TAG
+RUN eget opentofu/opentofu --asset tar.gz --asset '^gpg' --asset '^pem' --asset '^sig' --file tofu --tag ${TOFU_TAG} --to ${BIN_PATH}
+
+FROM base as trivy
+ARG BIN_PATH
+ARG TRIVY_TAG
+RUN eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --tag ${TRIVY_TAG} --to ${BIN_PATH}
+
+# build final
+FROM ghcr.io/sylchamber/eget:${VARIANT}
+LABEL \
+    org.opencontainers.image.description="Outils IaC absents des dépôts de certaines distributions" \
+    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs \
+    org.opencontainers.image.base.name=ghcr.io/sylchamber/eget:${VARIANT}
+
+ARG BIN_PATH
+
+COPY --from=argocd ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=conftest ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=etcd ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=grype ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=helm-docs ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=k9s ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=kdash ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=kompose ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=krew ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=kubecolor ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=kubesec ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=kustomize ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=lychee ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=operator-sdk ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=step ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=sops ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=syft ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=tkn ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=tofu ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=trivy ${BIN_PATH}/* ${BIN_PATH}/
