@@ -2,7 +2,7 @@
 ARG VARIANT=latest
 
 ARG BIN_PATH=/usr/local/bin
-ARG MAN_PATH=/usr/local/share/man
+ARG MAN_PATH=/usr/local/share/man/man1
 
 ARG CHEZMOI_TAG=v2.68.1
 ARG GOTASK_TAG=v3.46.4
@@ -20,8 +20,12 @@ RUN eget twpayne/chezmoi --asset linux_amd64.tar.gz --asset '^sbom' --tag ${CHEZ
 
 FROM base as rclone
 ARG BIN_PATH
+ARG MAN_PATH
 ARG RCLONE_TAG
-RUN eget rclone/rclone --asset zip --tag ${RCLONE_TAG} --to ${BIN_PATH}
+RUN \
+    eget rclone/rclone --asset zip --tag ${RCLONE_TAG} --download-only --to /tmp/rclone-${RCLONE_TAG}.zip && \
+    unzip -j /tmp/rclone-${RCLONE_TAG}.zip '*/rclone' -d ${BIN_PATH}/ && \
+    unzip -j /tmp/rclone-${RCLONE_TAG}.zip '*/rclone.1' -d ${MAN_PATH}/
 
 FROM base as task
 ARG BIN_PATH
@@ -42,8 +46,11 @@ FROM base as yq
 ARG BIN_PATH
 ARG MAN_PATH
 ARG YQ_TAG
-RUN eget mikefarah/yq --asset tar.gz --tag ${YQ_TAG} --file yq_linux_amd64 --to ${BIN_PATH}/yq
-RUN eget mikefarah/yq --asset tar.gz --tag ${YQ_TAG} --file yq.1 --to ${MAN_PATH}/man1/
+RUN \
+    eget mikefarah/yq --asset tar.gz --tag ${YQ_TAG} --download-only --to /tmp/yq-${YQ_TAG}.tar.gz && \
+    tar xvf /tmp/yq-${YQ_TAG}.tar.gz -C ${BIN_PATH} --wildcards './yq_linux_amd64' && \
+    tar xvf /tmp/yq-${YQ_TAG}.tar.gz -C ${MAN_PATH} --wildcards 'yq.1' && \
+    mv ${BIN_PATH}/yq_linux_amd64 ${BIN_PATH}/yq
 
 FROM base as fresh
 RUN eget sinelaw/fresh --asset amd64.deb --download-only --to /usr/local/share/
@@ -60,9 +67,10 @@ ARG MAN_PATH
 
 COPY --from=chezmoi ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=rclone ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=rclone ${MAN_PATH}/* ${MAN_PATH}/
 COPY --from=task ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=topgrade ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=tq ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=yq ${BIN_PATH}/* ${BIN_PATH}/
-COPY --from=yq ${MAN_PATH}/man1/* ${MAN_PATH}/man1/
+COPY --from=yq ${MAN_PATH}/* ${MAN_PATH}/
 COPY --from=fresh /usr/local/share/*.deb /usr/local/share/
