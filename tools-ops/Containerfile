@@ -38,7 +38,7 @@ RUN eget open-policy-agent/conftest --asset tar.gz --tag ${CONFTEST_TAG} --to ${
 FROM base as etcd
 ARG BIN_PATH
 ARG ETCD_TAG
-RUN eget etcd-io/etcd --file 'etcd?tl' --tag ${ETCD_TAG} --download-all --to ${BIN_PATH}
+RUN eget etcd-io/etcd --file '*/etcd?tl' --tag ${ETCD_TAG} --all --to ${BIN_PATH}
 
 FROM base as grype
 ARG BIN_PATH
@@ -123,9 +123,9 @@ RUN eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' -
 # build final
 FROM ghcr.io/sylchamber/eget:${VARIANT}
 LABEL \
-    org.opencontainers.image.description="Outils IaC absents des dépôts de certaines distributions" \
-    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs \
-    org.opencontainers.image.base.name=ghcr.io/sylchamber/eget:${VARIANT}
+	org.opencontainers.image.description="Outils IaC absents des dépôts de certaines distributions" \
+	org.opencontainers.image.source=https://github.com/SylChamber/conteneurs \
+	org.opencontainers.image.base.name=ghcr.io/sylchamber/eget:${VARIANT}
 
 ARG BIN_PATH
 
