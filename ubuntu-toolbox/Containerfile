@@ -51,6 +51,7 @@ RUN apt-get update && \
 	diffutils diffutils-doc \
 	du-dust \
 	dysk \
+	fastfetch \
 	fd-find \
 	gdu \
 	git git-credential-oauth \
