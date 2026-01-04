@@ -33,6 +33,7 @@ RUN apt-get update && \
     ubuntu-minimal ubuntu-standard \
     libnss-myhostname \
     flatpak-xdg-utils \
+    apt-file \
     fish \
     zsh \
     acl \
