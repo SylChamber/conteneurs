@@ -1,0 +1,109 @@
+# /root/.eget.toml
+# s'assurer de 'umask 022'
+# lancer les mises à jour avec 'sudo eget -D'
+[global]
+target = "/usr/local/bin"
+upgrade_only = true
+
+["argoproj/argo-cd"]
+# requis car eget prend le nom du projet par défaut
+target = "/usr/local/bin/argocd"
+
+["twpayne/chezmoi"]
+asset_filters = ["linux_amd64.tar.gz", "^sbom"]
+
+["open-policy-agent/conftest"]
+asset_filters = ["tar.gz"]
+
+["ameshkov/dnslookup"]
+
+["zyedidia/eget"]
+
+# Mise à jour de fresh
+# eget sinelaw/fresh --asset amd64.deb --download-only
+# dpkg -i *.deb
+
+["anchore/grype"]
+asset_filters = ["tar.gz"]
+
+["norwoodj/helm-docs"]
+asset_filters = ["tar.gz"]
+
+["derailed/k9s"]
+asset_filters = [".tar.gz", "^sbom"]
+
+["kdash-rs/kdash"]
+asset_filters = ["linux.tar.gz"]
+
+["kubernetes/kompose"]
+asset_filters = ["tar.gz"]
+target = "/usr/local/bin/kompose"
+
+["kubernetes-sigs/krew"]
+# contient aussi ._krew-linux_amd64
+file = "./krew-linux_amd64"
+target = "/usr/local/bin/kubectl-krew"
+
+["kubecolor/kubecolor"]
+asset_filters = ["tar.gz"]
+
+["controlplaneio/kubesec"]
+
+["kubernetes-sigs/kustomize"]
+
+["lycheeverse/lychee"]
+asset_filters = ["gnu"]
+
+["operator-framework/operator-sdk"]
+asset_filters = ["sdk"]
+
+# Installation de la doc:
+# eget --asset zip --download-only --to rclone.zip
+# unzip -juo rclone.zip "*/README.*" -d /usr/local/share/doc/rclone
+# unzip -juo rclone.zip "*/rclone.1" -d /usr/local/man/man1
+["rclone/rclone"]
+asset_filters = ["zip"]
+
+["getsops/sops"]
+asset_filters = ["^sbom"]
+
+# ["starship/starship"]
+# asset_filters = ["gnu"]
+
+["anchore/syft"]
+asset_filters = ["tar.gz"]
+
+["go-task/task"]
+asset_filters = ["tar.gz"]
+
+["opentofu/opentofu"]
+asset_filters = ["tar.gz", "^gpg", "^pem", "^sig"]
+file = "tofu"
+
+["topgrade-rs/topgrade"]
+asset_filters = ["gnu"]
+
+["cryptaliagy/tomlq"]
+asset_filters = ["amd64"]
+
+["aquasecurity/trivy"]
+asset_filters = ["64bit.tar.gz", "^pem", "^sig"]
+
+["mikefarah/yq"]
+# pour la man page: eget mikefarah/yq --file yq.1 --to /usr/local/man/man1
+asset_filters = ["tar.gz"]
+file = "yq_linux_amd64"
+target = "/usr/local/bin/yq"
+
+## Téléchargements systématiques
+################################
+["etcd-io/etcd"]
+all = true
+file = "etcd?tl"
+
+["smallstep/cli"]
+asset_filters = ["linux_amd64", "^pem", "^sig"]
+file = "*/bin/step"
+
+["tektoncd/cli"]
+file = "tkn"

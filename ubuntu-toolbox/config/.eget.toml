@@ -10,6 +10,10 @@ asset_filters = ["linux_amd64.tar.gz", "^sbom"]
 
 ["zyedidia/eget"]
 
+# Mise à jour de fresh
+# eget sinelaw/fresh --asset amd64.deb --download-only
+# dpkg -i *.deb
+
 ["lycheeverse/lychee"]
 asset_filters = ["gnu"]
 

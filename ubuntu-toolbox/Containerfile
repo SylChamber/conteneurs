@@ -7,13 +7,13 @@ FROM ghcr.io/sylchamber/tools-shell:latest as tools
 FROM docker.io/library/ubuntu:${VARIANT}
 
 LABEL com.github.containers.toolbox="true" \
-    name="ubuntu-toolbox" \
-    version="25.10" \
-    usage="This image is meant to be used with the toolbox command" \
-    summary="Base image for creating Ubuntu Toolbx containers" \
-    org.opencontainers.image.base.name=docker.io/library/ubuntu:${VARIANT} \
-    org.opencontainers.image.description="Image toolbox de base" \
-    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
+	name="ubuntu-toolbox" \
+	version="25.10" \
+	usage="This image is meant to be used with the toolbox command" \
+	summary="Base image for creating Ubuntu Toolbx containers" \
+	org.opencontainers.image.base.name=docker.io/library/ubuntu:${VARIANT} \
+	org.opencontainers.image.description="Image toolbox de base" \
+	org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
 
 ARG TOOLS_PATH=/usr/local/bin
 ARG TOOLS_MAN_PATH=/usr/local/share/man/man1
@@ -26,68 +26,69 @@ RUN rm /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-lan
 # Install ubuntu-minimal & ubuntu-standard
 # Install extra packages as well as libnss-myhostname
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -y install unminimize && \
-    sed -Ei '/apt-get (update|upgrade)/s/^/#/' /usr/bin/unminimize && \
-    yes | /usr/bin/unminimize && \
-    DEBIAN_FRONTEND=noninteractive apt-get -y install \
-    ubuntu-minimal ubuntu-standard \
-    libnss-myhostname \
-    flatpak-xdg-utils \
-    apt-file \
-    fish \
-    zsh \
-    acl \
-    age \
-    bat \
-    bc \
-    bind9-dnsutils \
-    bind9-utils \
-    broot \
-    btm \
-    btop \
-    buildah \
-    curl  \
-    diffutils diffutils-doc \
-    du-dust \
-    dysk \
-    fd-find \
-    gdu \
-    git git-credential-oauth \
-    git-hub \
-    glow \
-    gnupg gnupg-agent \
-    htop \
-    hyperfine \
-    iproute2 iputils-ping iputils-tracepath \
-    jq \
-    lsd \
-    lsof \
-    keyutils \
-    mdbook \
-    micro \
-    nano \
-    openssh-client \
-    p11-kit-modules \
-    pinentry-curses pinentry-doc \
-    podman podman-compose podman-remote \
-    procs \
-    ripgrep \
-    rsync \
-    skopeo \
-    starship \
-    tcpdump \
-    tealdeer \
-    tree \
-    unzip \
-    util-linux \
-    vim \
-    wget \
-    wipe \
-    xh \
-    zip && \
-    apt-get -y clean && \
-    mkdir -p /usr/local/bin /usr/local/share/man/man1 /usr/local/share/doc && \
-    rm -rd /var/lib/apt/lists/*
+	DEBIAN_FRONTEND=noninteractive apt-get -y install unminimize && \
+	sed -Ei '/apt-get (update|upgrade)/s/^/#/' /usr/bin/unminimize && \
+	yes | /usr/bin/unminimize && \
+	DEBIAN_FRONTEND=noninteractive apt-get -y install \
+	ubuntu-minimal ubuntu-standard \
+	libnss-myhostname \
+	flatpak-xdg-utils \
+	apt-file \
+	nala \
+	fish \
+	zsh \
+	acl \
+	age \
+	bat \
+	bc \
+	bind9-dnsutils \
+	bind9-utils \
+	broot \
+	btm \
+	btop \
+	buildah \
+	curl  \
+	diffutils diffutils-doc \
+	du-dust \
+	dysk \
+	fd-find \
+	gdu \
+	git git-credential-oauth \
+	git-hub \
+	glow \
+	gnupg gnupg-agent \
+	htop \
+	hyperfine \
+	iproute2 iputils-ping iputils-tracepath \
+	jq \
+	lsd \
+	lsof \
+	keyutils \
+	mdbook \
+	micro \
+	nano \
+	openssh-client \
+	p11-kit-modules \
+	pinentry-curses pinentry-doc \
+	podman podman-compose podman-remote \
+	procs \
+	ripgrep \
+	rsync \
+	skopeo \
+	starship \
+	tcpdump \
+	tealdeer \
+	tree \
+	unzip \
+	util-linux \
+	vim \
+	wget \
+	wipe \
+	xh \
+	zip && \
+	apt-get -y clean && \
+	mkdir -p /usr/local/bin /usr/local/share/man/man1 /usr/local/share/doc && \
+	rm -rd /var/lib/apt/lists/*
 
 # Enable the use of p11-kit-client.so to access CA certificates from the host
 RUN mkdir --parents /etc/pkcs11/modules
@@ -114,5 +115,5 @@ COPY --from=tools ${TOOLS_MAN_PATH} /usr/local/share/man/man1/
 COPY --from=tools /usr/local/share/*.deb /tmp
 
 RUN \
-    for d in /tmp/*.deb ; do dpkg -i $d ; done && \
-    rm /tmp/*.deb
+	for d in /tmp/*.deb ; do dpkg -i $d ; done && \
+	rm /tmp/*.deb

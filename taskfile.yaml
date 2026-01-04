@@ -29,10 +29,6 @@ tasks:
     cmd: |
       echo $QUAY_CLI_PASSWORD | {{.CLI_OCI}} login -u {{.QUAY.OWNER}} --password-stdin {{.QUAY.REGISTRY}}
 
-  build:all:
-    desc: Construit et étiquette toutes les images
-    deps: [build:almalinux-toolbox, build:almalinux-toolbox-ops]
-
   build:eget:
     desc: Construit et étiquette sylchamber/eget
     vars:
@@ -40,6 +36,13 @@ tasks:
       VARIANT: latest
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:eget:
+    desc: Publie l'image sylchamber/eget
+    vars:
+      IMAGE: eget
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:alpine-tools-shell:
     desc: Construit et étiquette sylchamber/alpine-tools-shell
@@ -48,6 +51,13 @@ tasks:
       VARIANT: latest
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:alpine-tools-shell:
+    desc: Publie l'image sylchamber/alpine-tools-shell
+    vars:
+      IMAGE: alpine-tools-shell
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:alpine-tools-ops:
     desc: Construit et étiquette sylchamber/alpine-tools-ops
@@ -56,6 +66,13 @@ tasks:
       VARIANT: latest
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:alpine-tools-ops:
+    desc: Publie l'image sylchamber/alpine-tools-ops
+    vars:
+      IMAGE: alpine-tools-ops
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:alpine-toolbox:
     desc: Construit et étiquette sylchamber/alpine-toolbox
@@ -64,6 +81,13 @@ tasks:
       VARIANT: latest
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:alpine-toolbox:
+    desc: Publie l'image sylchamber/alpine-toolbox
+    vars:
+      IMAGE: alpine-toolbox
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:alpine-toolbox-ops:
     desc: Construit et étiquette sylchamber/alpine-toolbox-ops
@@ -72,6 +96,13 @@ tasks:
       VARIANT: latest
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:alpine-toolbox-ops:
+    desc: Publie l'image sylchamber/alpine-toolbox-ops
+    vars:
+      IMAGE: alpine-toolbox-ops
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:almalinux-toolbox:
     desc: Construit et étiquette sylchamber/almalinux-toolbox
@@ -80,6 +111,13 @@ tasks:
       VARIANT: "10"
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:almalinux-toolbox:
+    desc: Publie l'image sylchamber/almalinux-toolbox
+    vars:
+      IMAGE: almalinux-toolbox
+      VARIANT: "10"
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:almalinux-toolbox-ops:
     desc: Construit et étiquette sylchamber/almalinux-toolbox-ops
@@ -88,6 +126,13 @@ tasks:
       VARIANT: "10"
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:almalinux-toolbox-ops:
+    desc: Publie l'image sylchamber/almalinux-toolbox-ops
+    vars:
+      IMAGE: almalinux-toolbox-ops
+      VARIANT: "10"
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:tools-shell:
     desc: Construit et étiquette sylchamber/tools-shell
@@ -96,6 +141,13 @@ tasks:
       VARIANT: latest
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:tools-shell:
+    desc: Publie l'image sylchamber/tools-shell
+    vars:
+      IMAGE: tools-shell
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:tools-ops:
     desc: Construit et étiquette sylchamber/tools-ops
@@ -104,6 +156,13 @@ tasks:
       VARIANT: latest
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:tools-ops:
+    desc: Publie l'image sylchamber/tools-ops
+    vars:
+      IMAGE: tools-ops
+      VARIANT: latest
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   build:ubuntu-toolbox:
     desc: Construit et étiquette sylchamber/ubuntu-toolbox
@@ -112,6 +171,32 @@ tasks:
       VARIANT: rolling
     cmds:
       - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:ubuntu-toolbox:
+    desc: Publie l'image sylchamber/ubuntu-toolbox
+    vars:
+      IMAGE: ubuntu-toolbox
+      VARIANT: rolling
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  build:ubuntu-toolbox-ops:
+    desc: Construit et étiquette sylchamber/ubuntu-toolbox-ops
+    vars:
+      IMAGE: ubuntu-toolbox-ops
+      VARIANT: rolling
+    cmds:
+      - task: build:{{.IMAGE}}:{{.VARIANT}}
+  push:ubuntu-toolbox-ops:
+    desc: Publie l'image sylchamber/ubuntu-toolbox-ops
+    vars:
+      IMAGE: ubuntu-toolbox-ops
+      VARIANT: rolling
+    cmds:
+      - task: push:{{.IMAGE}}:{{.VARIANT}}
+
+  build:all:
+    desc: Construit et étiquette toutes les images
+    deps: [build:almalinux-toolbox, build:almalinux-toolbox-ops]
 
   build:*:*:
     internal: true
@@ -136,86 +221,6 @@ tasks:
   push:all:
     desc: Publie toutes les images
     deps: [push:almalinux-toolbox, push:almalinux-toolbox-ops]
-
-  push:eget:
-    desc: Publie l'image sylchamber/eget
-    vars:
-      IMAGE: eget
-      VARIANT: latest
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:alpine-tools-shell:
-    desc: Publie l'image sylchamber/alpine-tools-shell
-    vars:
-      IMAGE: alpine-tools-shell
-      VARIANT: latest
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:alpine-tools-ops:
-    desc: Publie l'image sylchamber/alpine-tools-ops
-    vars:
-      IMAGE: alpine-tools-ops
-      VARIANT: latest
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:alpine-toolbox:
-    desc: Publie l'image sylchamber/alpine-toolbox
-    vars:
-      IMAGE: alpine-toolbox
-      VARIANT: latest
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:alpine-toolbox-ops:
-    desc: Publie l'image sylchamber/alpine-toolbox-ops
-    vars:
-      IMAGE: alpine-toolbox-ops
-      VARIANT: latest
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:almalinux-toolbox:
-    desc: Publie l'image sylchamber/almalinux-toolbox
-    vars:
-      IMAGE: almalinux-toolbox
-      VARIANT: "10"
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:almalinux-toolbox-ops:
-    desc: Publie l'image sylchamber/almalinux-toolbox-ops
-    vars:
-      IMAGE: almalinux-toolbox-ops
-      VARIANT: "10"
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:tools-shell:
-    desc: Publie l'image sylchamber/tools-shell
-    vars:
-      IMAGE: tools-shell
-      VARIANT: latest
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:tools-ops:
-    desc: Publie l'image sylchamber/tools-ops
-    vars:
-      IMAGE: tools-ops
-      VARIANT: latest
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
-
-  push:ubuntu-toolbox:
-    desc: Publie l'image sylchamber/ubuntu-toolbox
-    vars:
-      IMAGE: ubuntu-toolbox
-      VARIANT: rolling
-    cmds:
-      - task: push:{{.IMAGE}}:{{.VARIANT}}
 
   push:*:*:
     desc: Publie l'image spécifiée

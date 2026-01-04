@@ -1,0 +1,43 @@
+ARG VARIANT=rolling
+
+# Outils IaC/DevOps non présents dans les dépôts 25.10
+FROM ghcr.io/sylchamber/tools-ops:latest as tools
+
+FROM ghcr.io/sylchamber/ubuntu-toolbox:${VARIANT}
+LABEL com.github.containers.toolbox="true" \
+	name="ubuntu-toolbox-ops" \
+	version="25.10" \
+	usage="This image is meant to be used with the toolbox command" \
+	summary="Image toolbox Ubuntu de IaC et d'ingénierie de plateforme" \
+	org.opencontainers.image.base.name=ghcr.io/sylchamber/ubuntu-toolbox:${VARIANT} \
+	org.opencontainers.image.description="Image toolbox Ubuntu de IaC et d'ingénierie de plateforme" \
+	org.opencontainers.image.source=https://github.com/SylChamber/conteneurs
+
+ARG TOOLS_PATH=/usr/local/bin
+ARG TOOLS_MAN_PATH=/usr/local/share/man/man1
+
+ARG KUBECTL_VERSION=v1.34
+
+COPY <<-EOF /etc/apt/sources.list.d/kubernetes.sources
+	# Dépôt de la cli kubectl pour Kubernetes
+	Types: deb
+	URIs: https://pkgs.k8s.io/core:/stable:/${KUBECTL_VERSION}/deb/
+	Suites: /
+	Architectures: amd64
+	Signed-By: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+EOF
+
+RUN <<-EOF
+	curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBECTL_VERSION}/deb/Release.key |
+	gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+	chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+	apt-get update
+	DEBIAN_FRONTEND=noninteractive apt-get -y install kubectl
+EOF
+
+COPY --chmod=644 ["config/fish/conf.d/*", "/etc/fish/conf.d/"]
+COPY --chmod=644 ["config/fish/functions/*", "/etc/fish/functions/"]
+COPY ["config/.eget.toml", "/root/"]
+
+COPY --from=tools ${TOOLS_PATH}/* /usr/local/bin/
+COPY --from=tools ${TOOLS_MAN_PATH} /usr/local/share/man/man1/
