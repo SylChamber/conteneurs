@@ -5,7 +5,23 @@
 target = "/usr/local/bin"
 upgrade_only = true
 
+["twpayne/chezmoi"]
+asset_filters = ["linux_amd64.tar.gz", "^sbom"]
+
 ["zyedidia/eget"]
+
+["lycheeverse/lychee"]
+asset_filters = ["gnu"]
+
+# Installation de la doc:
+# eget --asset zip --download-only --to rclone.zip
+# unzip -juo rclone.zip "*/README.*" -d /usr/local/share/doc/rclone
+# unzip -juo rclone.zip "*/rclone.1" -d /usr/local/man/man1
+["rclone/rclone"]
+asset_filters = ["zip"]
+
+# ["starship/starship"]
+# asset_filters = ["gnu"]
 
 ["go-task/task"]
 asset_filters = ["tar.gz"]
