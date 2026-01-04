@@ -15,7 +15,6 @@ ARG KREW_TAG=v0.4.5
 ARG KUBECOLOR_TAG=v0.5.3
 ARG KUBESEC_TAG=v2.14.2
 ARG KUSTOMIZE_TAG=kustomize/v5.8.0
-ARG LYCHEE_TAG=lychee-v0.22.0
 ARG OPERATOR_SDK_TAG=v1.42.0
 ARG STEP_TAG=v0.29.0
 ARG SOPS_TAG=v3.11.0
@@ -86,11 +85,6 @@ ARG BIN_PATH
 ARG KUSTOMIZE_TAG
 RUN eget kubernetes-sigs/kustomize --tag ${KUSTOMIZE_TAG} --to ${BIN_PATH}
 
-FROM base as lychee
-ARG BIN_PATH
-ARG LYCHEE_TAG
-RUN eget lycheeverse/lychee --asset gnu --tag ${LYCHEE_TAG} --to ${BIN_PATH}
-
 FROM base as operator-sdk
 ARG BIN_PATH
 ARG OPERATOR_SDK_TAG
@@ -147,7 +141,6 @@ COPY --from=krew ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=kubecolor ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=kubesec ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=kustomize ${BIN_PATH}/* ${BIN_PATH}/
-COPY --from=lychee ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=operator-sdk ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=step ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=sops ${BIN_PATH}/* ${BIN_PATH}/

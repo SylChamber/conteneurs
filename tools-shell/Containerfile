@@ -6,6 +6,7 @@ ARG MAN_PATH=/usr/local/share/man/man1
 
 ARG CHEZMOI_TAG=v2.68.1
 ARG GOTASK_TAG=v3.46.4
+ARG LYCHEE_TAG=lychee-v0.22.0
 ARG RCLONE_TAG=v1.72.1
 ARG TOPGRADE_TAG=v16.7.0
 ARG TQ_TAG=0.2.2
@@ -17,6 +18,11 @@ FROM base as chezmoi
 ARG BIN_PATH
 ARG CHEZMOI_TAG
 RUN eget twpayne/chezmoi --asset linux_amd64.tar.gz --asset '^sbom' --tag ${CHEZMOI_TAG} --to ${BIN_PATH}
+
+FROM base as lychee
+ARG BIN_PATH
+ARG LYCHEE_TAG
+RUN eget lycheeverse/lychee --asset gnu --tag ${LYCHEE_TAG} --to ${BIN_PATH}
 
 FROM base as rclone
 ARG BIN_PATH
@@ -66,6 +72,7 @@ ARG BIN_PATH
 ARG MAN_PATH
 
 COPY --from=chezmoi ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=lychee ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=rclone ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=rclone ${MAN_PATH}/* ${MAN_PATH}/
 COPY --from=task ${BIN_PATH}/* ${BIN_PATH}/
