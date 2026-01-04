@@ -28,10 +28,11 @@ FROM base as rclone
 ARG BIN_PATH
 ARG MAN_PATH
 ARG RCLONE_TAG
-RUN \
-    eget rclone/rclone --asset zip --tag ${RCLONE_TAG} --download-only --to /tmp/rclone-${RCLONE_TAG}.zip && \
-    unzip -j /tmp/rclone-${RCLONE_TAG}.zip '*/rclone' -d ${BIN_PATH}/ && \
-    unzip -j /tmp/rclone-${RCLONE_TAG}.zip '*/rclone.1' -d ${MAN_PATH}/
+RUN <<-EOF
+	eget rclone/rclone --asset zip --tag ${RCLONE_TAG} --download-only --to /tmp/rclone-${RCLONE_TAG}.zip
+	unzip -j /tmp/rclone-${RCLONE_TAG}.zip '*/rclone' -d ${BIN_PATH}/
+	unzip -j /tmp/rclone-${RCLONE_TAG}.zip '*/rclone.1' -d ${MAN_PATH}/
+EOF
 
 FROM base as task
 ARG BIN_PATH
@@ -52,11 +53,12 @@ FROM base as yq
 ARG BIN_PATH
 ARG MAN_PATH
 ARG YQ_TAG
-RUN \
-    eget mikefarah/yq --asset tar.gz --tag ${YQ_TAG} --download-only --to /tmp/yq-${YQ_TAG}.tar.gz && \
-    tar xvf /tmp/yq-${YQ_TAG}.tar.gz -C ${BIN_PATH} --wildcards './yq_linux_amd64' && \
-    tar xvf /tmp/yq-${YQ_TAG}.tar.gz -C ${MAN_PATH} --wildcards 'yq.1' && \
+RUN <<-EOF
+    eget mikefarah/yq --asset tar.gz --tag ${YQ_TAG} --download-only --to /tmp/yq-${YQ_TAG}.tar.gz
+    tar xvf /tmp/yq-${YQ_TAG}.tar.gz --no-same-owner -C ${BIN_PATH} --wildcards './yq_linux_amd64'
+    tar xvf /tmp/yq-${YQ_TAG}.tar.gz --no-same-owner -C ${MAN_PATH} --wildcards 'yq.1'
     mv ${BIN_PATH}/yq_linux_amd64 ${BIN_PATH}/yq
+EOF
 
 FROM base as fresh
 RUN eget sinelaw/fresh --asset amd64.deb --download-only --to /usr/local/share/
@@ -64,9 +66,9 @@ RUN eget sinelaw/fresh --asset amd64.deb --download-only --to /usr/local/share/
 # build final
 FROM ghcr.io/sylchamber/eget:${VARIANT}
 LABEL \
-    org.opencontainers.image.description="Outils shell communs absents des dépôts de certaines distributions" \
-    org.opencontainers.image.source=https://github.com/SylChamber/conteneurs \
-    org.opencontainers.image.base.name=ghcr.io/sylchamber/eget:${VARIANT}
+	org.opencontainers.image.description="Outils shell communs absents des dépôts de certaines distributions" \
+	org.opencontainers.image.source=https://github.com/SylChamber/conteneurs \
+	org.opencontainers.image.base.name=ghcr.io/sylchamber/eget:${VARIANT}
 
 ARG BIN_PATH
 ARG MAN_PATH
