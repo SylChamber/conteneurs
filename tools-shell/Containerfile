@@ -4,7 +4,7 @@ ARG VARIANT=latest
 ARG BIN_PATH=/usr/local/bin
 ARG MAN_PATH=/usr/local/share/man/man1
 
-ARG CHEZMOI_TAG=v2.68.1
+ARG CHEZMOI_TAG=v2.69.0
 ARG GOTASK_TAG=v3.46.4
 ARG LYCHEE_TAG=lychee-v0.22.0
 ARG RCLONE_TAG=v1.72.1

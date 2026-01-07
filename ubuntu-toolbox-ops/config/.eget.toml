@@ -23,6 +23,8 @@ asset_filters = ["tar.gz"]
 # eget sinelaw/fresh --asset amd64.deb --download-only
 # dpkg -i *.deb
 
+["voidint/g"]
+
 ["anchore/grype"]
 asset_filters = ["tar.gz"]
 

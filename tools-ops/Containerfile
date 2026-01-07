@@ -5,7 +5,8 @@ ARG MAN_PATH=/usr/local/share/man
 
 ARG ARGOCD_TAG=v3.2.3
 ARG CONFTEST_TAG=v0.66.0
-ARG ETCD_TAG=v3.6.6
+ARG ETCD_TAG=v3.6.7
+ARG G_TAG=v1.8.0
 ARG GRYPE_TAG=v0.104.3
 ARG HELM_DOCS_TAG=v1.14.2
 ARG K9S_TAG=v0.50.16
@@ -39,6 +40,11 @@ FROM base as etcd
 ARG BIN_PATH
 ARG ETCD_TAG
 RUN eget etcd-io/etcd --file '*/etcd?tl' --tag ${ETCD_TAG} --all --to ${BIN_PATH}
+
+FROM base as g
+ARG BIN_PATH
+ARG G_TAG
+RUN eget voidint/g --tag ${G_TAG} --to ${BIN_PATH}
 
 FROM base as grype
 ARG BIN_PATH
@@ -132,6 +138,7 @@ ARG BIN_PATH
 COPY --from=argocd ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=conftest ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=etcd ${BIN_PATH}/* ${BIN_PATH}/
+COPY --from=g ${BIN_PATH}/* ${BIN_PATH}
 COPY --from=grype ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=helm-docs ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=k9s ${BIN_PATH}/* ${BIN_PATH}/
