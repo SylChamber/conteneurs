@@ -22,7 +22,6 @@ ARG SOPS_TAG=v3.11.0
 ARG SYFT_TAG=v1.39.0
 ARG TKN_TAG=v0.43.0
 ARG TOFU_TAG=v1.11.2
-ARG TRIVY_TAG=v0.68.2
 
 FROM ghcr.io/sylchamber/eget:${VARIANT} as base
 
@@ -121,11 +120,6 @@ ARG BIN_PATH
 ARG TOFU_TAG
 RUN eget opentofu/opentofu --asset tar.gz --asset '^gpg' --asset '^pem' --asset '^sig' --file tofu --tag ${TOFU_TAG} --to ${BIN_PATH}
 
-FROM base as trivy
-ARG BIN_PATH
-ARG TRIVY_TAG
-RUN eget aquasecurity/trivy --asset 64bit.tar.gz --asset '^pem' --asset '^sig' --tag ${TRIVY_TAG} --to ${BIN_PATH}
-
 # build final
 FROM ghcr.io/sylchamber/eget:${VARIANT}
 LABEL \
@@ -154,4 +148,3 @@ COPY --from=sops ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=syft ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=tkn ${BIN_PATH}/* ${BIN_PATH}/
 COPY --from=tofu ${BIN_PATH}/* ${BIN_PATH}/
-COPY --from=trivy ${BIN_PATH}/* ${BIN_PATH}/
